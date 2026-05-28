@@ -1,0 +1,88 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { FileText, Download, Pill, Clock } from "lucide-react"
+import { prescriptions } from "@/lib/data"
+import { EmptyState } from "@/components/states"
+
+export default function PrescriptionsPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">My Prescriptions</h1>
+        <p className="text-muted-foreground">
+          View and manage your prescriptions
+        </p>
+      </div>
+
+      {prescriptions.length === 0 ? (
+        <Card>
+          <CardContent className="p-6">
+            <EmptyState
+              title="No prescriptions"
+              description="Your prescriptions will appear here after your consultations."
+              icon={<FileText className="h-6 w-6 text-muted-foreground" />}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {prescriptions.map((prescription) => (
+            <Card key={prescription.id}>
+              <CardHeader className="flex flex-row items-start justify-between pb-2">
+                <div>
+                  <CardTitle className="text-lg">
+                    {prescription.diagnosis}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Prescribed by {prescription.doctorName}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">
+                    {new Date(prescription.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </Badge>
+                  <Button variant="outline" size="sm">
+                    <Download className="mr-1 h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Medications</h4>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {prescription.medications.map((med, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 rounded-lg border p-3"
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                          <Pill className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{med.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {med.dosage}
+                          </p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {med.frequency} for {med.duration}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
