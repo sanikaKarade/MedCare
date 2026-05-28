@@ -5,17 +5,21 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs"
+import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { useAuth } from "@/lib/auth-context"
 import {
   Menu,
   Heart,
   User,
-  LogOut,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -36,7 +40,6 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const { user, isAuthenticated, logout } = useAuth()
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/"
@@ -75,14 +78,23 @@ export function Navbar() {
 
         {/* Auth Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          {isAuthenticated ? (
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <Button variant="ghost" className="transition-all hover:scale-105">
+                Log in
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button className="transition-all hover:scale-105 hover:shadow-md">
+                Get Started
+              </Button>
+            </SignUpButton>
+          </Show>
+          <Show when="signed-in">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 transition-all hover:scale-105">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-110">
-                    {user?.name?.charAt(0).toUpperCase() || "U"}
-                  </div>
-                  <span className="max-w-[100px] truncate">{user?.name}</span>
+                  <span>Account</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -93,25 +105,12 @@ export function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                <DropdownMenuItem className="cursor-default">
+                  <UserButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" className="transition-all hover:scale-105" asChild>
-                <Link href="/login">Log in</Link>
-              </Button>
-              <Button className="transition-all hover:scale-105 hover:shadow-md" asChild>
-                <Link href="/register">Get Started</Link>
-              </Button>
-            </>
-          )}
+          </Show>
         </div>
 
         {/* Mobile Menu */}
@@ -143,41 +142,32 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 border-t pt-4">
-                {isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
-                    >
-                      <User className="h-4 w-4" />
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout()
-                        setIsOpen(false)
-                      }}
-                      className="flex w-full items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-destructive hover:bg-secondary"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Log out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
+                <Show when="signed-out">
+                  <SignInButton mode="modal">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start rounded-md px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
                     >
                       Log in
-                    </Link>
-                    <Link href="/register" onClick={() => setIsOpen(false)}>
-                      <Button className="mt-2 w-full">Get Started</Button>
-                    </Link>
-                  </>
-                )}
+                    </Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button className="mt-2 w-full">Get Started</Button>
+                  </SignUpButton>
+                </Show>
+                <Show when="signed-in">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
+                  >
+                    <User className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                  <div className="px-4 py-3">
+                    <UserButton />
+                  </div>
+                </Show>
               </div>
             </nav>
           </SheetContent>
