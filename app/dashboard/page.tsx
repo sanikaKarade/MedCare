@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/lib/auth-context"
+import { useUser } from "@clerk/nextjs"
 import {
   Calendar,
   FileText,
@@ -22,7 +22,7 @@ import {
 } from "@/lib/data"
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user } = useUser()
 
   const upcomingAppointments = appointments.filter(
     (apt) => apt.status === "upcoming"
@@ -66,7 +66,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            Welcome back, {user?.name?.split(" ")[0] || "User"}!
+          Welcome back, {user?.firstName || "User"}!
           </h1>
           <p className="text-muted-foreground">
             Here&apos;s an overview of your health dashboard.

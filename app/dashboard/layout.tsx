@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
+import { useUser, useClerk } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -48,18 +48,13 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, isAuthenticated, isLoading, logout } = useAuth()
+  const { user, isLoaded } = useUser()
+const { signOut } = useClerk()
   const pathname = usePathname()
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login")
-    }
-  }, [isLoading, isAuthenticated, router])
-
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <LoadingState message="Loading your dashboard..." />
@@ -67,7 +62,7 @@ export default function DashboardLayout({
     )
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return null
   }
 
@@ -115,13 +110,13 @@ export default function DashboardLayout({
       {/* User card */}
       <div className="border-t p-4">
         <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            {user?.name?.charAt(0).toUpperCase() || "U"}
-          </div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+  {user?.firstName?.charAt(0).toUpperCase() || "U"}
+</div>
           <div className="flex-1 truncate">
-            <p className="truncate text-sm font-medium">{user?.name}</p>
+            <p className="truncate text-sm font-medium">{user?.fullName}</p>
             <p className="truncate text-xs text-muted-foreground">
-              {user?.email}
+            {user?.primaryEmailAddress?.emailAddress}
             </p>
           </div>
         </div>
@@ -175,10 +170,10 @@ export default function DashboardLayout({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  {user?.name?.charAt(0).toUpperCase() || "U"}
+                {user?.firstName?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <span className="hidden max-w-[100px] truncate sm:inline-block">
-                  {user?.name}
+                  {user?.fullName}
                 </span>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </Button>
@@ -186,8 +181,8 @@ export default function DashboardLayout({
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  <p className="text-sm font-medium">{user?.fullName}</p>
+                  <p className="text-xs text-muted-foreground">{user?.primaryEmailAddress?.emailAddress}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -205,8 +200,8 @@ export default function DashboardLayout({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => {
-                  logout()
+                onClick={async () => {
+                  await signOut()
                   router.push("/")
                 }}
                 className="cursor-pointer text-destructive focus:text-destructive"
