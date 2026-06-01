@@ -1,0 +1,57 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ADD MODELS BELOW THIS LINE
+
+model Doctor {
+  id              String   @id @default(cuid())
+  name            String
+  specialization  String
+  experience      Int
+  consultationFee Int
+
+  imageUrl        String?
+  hospital        String?
+  city            String?
+
+  appointments    Appointment[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Appointment {
+  id               String   @id @default(cuid())
+
+  patientId        String
+  doctorId         String
+
+  patientName      String
+  patientPhone     String
+
+  appointmentDate  DateTime
+  appointmentTime  String
+
+  reason           String?
+
+  status           AppointmentStatus @default(PENDING)
+
+  doctor           Doctor @relation(fields: [doctorId], references: [id])
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
