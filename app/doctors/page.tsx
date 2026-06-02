@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { DoctorCard } from "@/components/doctor-card"
@@ -13,13 +13,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { doctors, specializations } from "@/lib/data"
+import { specializations } from "@/lib/data"
 import { Search, SlidersHorizontal } from "lucide-react"
 
 export default function DoctorsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [specialization, setSpecialization] = useState("All Specializations")
   const [availability, setAvailability] = useState("all")
+  const [doctors, setDoctors] = useState<any[]>([])
+const [loading, setLoading] = useState(true)
+
+useEffect(() => {
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch("/api/doctors")
+      const data = await response.json()
+
+      const transformedDoctors = data.map((doctor: any) => ({
+        id: doctor.id,
+        name: doctor.name,
+        specialization: doctor.specialization,
+        experience: doctor.experience,
+
+        image: "/placeholder.svg",
+
+        rating: 4.8,
+        reviews: 120,
+
+        availability: "Available Today",
+      }))
+
+      setDoctors(transformedDoctors)
+    } catch (error) {
+      console.error("Failed to fetch doctors", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchDoctors()
+}, [])
+if (loading) {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      Loading Doctors...
+    </div>
+  )
+}
 
   const filteredDoctors = doctors.filter((doctor) => {
     const matchesSearch =

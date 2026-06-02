@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { useAuth } from "@/lib/auth-context"
-import { doctors } from "@/lib/data"
+// import { doctors } from "@/lib/data"
 import {
   CalendarIcon,
   Clock,
@@ -43,23 +43,68 @@ function AppointmentContent() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
   const [selectedTime, setSelectedTime] = useState<string>("")
   const [symptoms, setSymptoms] = useState("")
+  const [patientName, setPatientName] = useState("")
+const [patientPhone, setPatientPhone] = useState("")
+const [doctors, setDoctors] = useState<any[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
 
   const doctor = doctors.find((d) => d.id === selectedDoctor)
 
+  // useEffect(() => {
+  //   if (!authLoading && !isAuthenticated) {
+  //     router.push("/login?redirect=/appointment")
+  //   }
+  // }, [authLoading, isAuthenticated, router])
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push("/login?redirect=/appointment")
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("/api/doctors")
+        const data = await response.json()
+  
+        setDoctors(data)
+      } catch (error) {
+        console.error("Failed to fetch doctors", error)
+      }
     }
-  }, [authLoading, isAuthenticated, router])
+  
+    fetchDoctors()
+  }, [])
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsSubmitting(false)
-    setIsComplete(true)
+    try {
+      setIsSubmitting(true)
+  
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          patientId: "demo-user",
+  
+          doctorId: selectedDoctor,
+  
+          patientName,
+          patientPhone,
+  
+          appointmentDate: selectedDate,
+          appointmentTime: selectedTime,
+  
+          reason: symptoms,
+        }),
+      })
+  
+      const data = await response.json()
+  
+      if (data.success) {
+        setIsComplete(true)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (authLoading) {
@@ -70,9 +115,9 @@ function AppointmentContent() {
     )
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
+  // if (!isAuthenticated) {
+  //   return null
+  // }
 
   if (isComplete) {
     return (
@@ -245,7 +290,32 @@ function AppointmentContent() {
                 </div>
               </div>
             )}
+                 <div>
+  <Label>Patient Name</Label>
+  <Input
+    value={patientName}
+    onChange={(e) => setPatientName(e.target.value)}
+    placeholder="Enter your name"
+  />
+</div>
 
+<div>
+  <Label>Phone Number</Label>
+  <Input
+    value={patientPhone}
+    onChange={(e) => setPatientPhone(e.target.value)}
+    placeholder="Enter phone number"
+  />
+</div>
+
+<div>
+  <Label>Symptoms</Label>
+  <Textarea
+    value={symptoms}
+    onChange={(e) => setSymptoms(e.target.value)}
+    placeholder="Describe your symptoms"
+  />
+</div>
             {/* Step 3: Symptoms & Confirmation */}
             {step === 3 && (
               <div className="space-y-6">
