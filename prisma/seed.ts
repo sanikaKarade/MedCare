@@ -1,6 +1,13 @@
-import { PrismaClient } from "../lib/generated/prisma/client";
+import { PrismaClient } from "../lib/generated/prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+})
+
+const prisma = new PrismaClient({
+  adapter,
+})
 
 async function main() {
   await prisma.doctor.createMany({
@@ -30,11 +37,11 @@ async function main() {
         hospital: "Apollo Clinic",
       },
     ],
-  });
+  })
 
-  console.log("Doctors added");
+  console.log("Doctors added")
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect());
+  .finally(() => prisma.$disconnect())
