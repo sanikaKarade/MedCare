@@ -29,17 +29,22 @@ useEffect(() => {
       const response = await fetch("/api/doctors")
       const data = await response.json()
 
+      console.log("API Response:", data)
+
+      if (!Array.isArray(data)) {
+        console.error("API did not return an array:", data)
+        setDoctors([])
+        return
+      }
+
       const transformedDoctors = data.map((doctor: any) => ({
         id: doctor.id,
         name: doctor.name,
         specialization: doctor.specialization,
         experience: doctor.experience,
-
-        image: "/placeholder.svg",
-
+        image: doctor.imageUrl || "/placeholder.svg",
         rating: 4.8,
         reviews: 120,
-
         availability: "Available Today",
       }))
 

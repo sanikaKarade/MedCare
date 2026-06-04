@@ -7,10 +7,13 @@ export async function GET() {
 
     return NextResponse.json(doctors)
   } catch (error) {
-    console.error(error)
-
+    console.error("FULL ERROR:", error)
+  
     return NextResponse.json(
-      { error: "Failed to fetch doctors" },
+      {
+        error: "Failed to fetch doctors",
+        details: String(error),
+      },
       { status: 500 }
     )
   }
