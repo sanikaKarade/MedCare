@@ -51,6 +51,7 @@ useEffect(() => {
       setDoctors(transformedDoctors)
     } catch (error) {
       console.error("Failed to fetch doctors", error)
+      setDoctors([])
     } finally {
       setLoading(false)
     }

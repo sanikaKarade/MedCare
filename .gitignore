@@ -17,3 +17,5 @@ node_modules
 /.clerk/
 
 /lib/generated/prisma
+/prisma/pglite-data
+/prisma/dev.db

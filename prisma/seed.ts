@@ -1,47 +1,31 @@
-import { PrismaClient } from "../lib/generated/prisma/client"
-import { PrismaPg } from "@prisma/adapter-pg"
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-})
-
-const prisma = new PrismaClient({
-  adapter,
-})
+import "dotenv/config"
+import { getPrisma } from "../lib/prisma"
+import { doctors } from "../lib/data"
 
 async function main() {
+  const prisma = await getPrisma()
+
+  await prisma.appointment.deleteMany()
+  await prisma.doctor.deleteMany()
+
   await prisma.doctor.createMany({
-    data: [
-      {
-        name: "Dr. Amit Sharma",
-        specialization: "Cardiologist",
-        experience: 10,
-        consultationFee: 500,
-        city: "Bhopal",
-        hospital: "City Hospital",
-      },
-      {
-        name: "Dr. Priya Patel",
-        specialization: "Dermatologist",
-        experience: 7,
-        consultationFee: 700,
-        city: "Indore",
-        hospital: "Care Hospital",
-      },
-      {
-        name: "Dr. Raj Verma",
-        specialization: "Orthopedic",
-        experience: 12,
-        consultationFee: 800,
-        city: "Bhopal",
-        hospital: "Apollo Clinic",
-      },
-    ],
+    data: doctors.map((doctor) => ({
+      id: doctor.id,
+      name: doctor.name,
+      specialization: doctor.specialization,
+      experience: doctor.experience,
+      consultationFee: doctor.consultationFee,
+      imageUrl: doctor.image,
+      hospital: doctor.hospital,
+    })),
   })
 
-  console.log("Doctors added")
+  console.log(`Seeded ${doctors.length} doctors`)
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(async () => {
+    const prisma = await getPrisma()
+    await prisma.$disconnect()
+  })
