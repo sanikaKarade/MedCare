@@ -1,18 +1,51 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Clock, MapPin, Video, X } from "lucide-react"
-import { appointments as initialAppointments } from "@/lib/data"
 import { EmptyState } from "@/components/states"
 
 export default function AppointmentsPage() {
-  const [appointments, setAppointments] = useState(initialAppointments)
+  const [appointments, setAppointments] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch("/api/appointments")
+        const data = await response.json()
 
+        if (!Array.isArray(data)) {
+          console.error("Invalid appointments response:", data)
+          setAppointments([])
+          return
+        }
+        
+        const formatted = data.map((apt: any) => ({
+          id: apt.id,
+          doctorName: apt.doctor?.name || "Unknown Doctor",
+          doctorSpecialization: apt.doctor?.specialization || "General",
+          date: apt.appointmentDate,
+          time: apt.appointmentTime,
+          symptoms: apt.reason,
+          status: "upcoming",
+        }))  
+        setAppointments(formatted)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  
+    fetchAppointments()
+  }, [])
+  if (loading) {
+    return <div>Loading appointments...</div>
+  }
   const upcomingAppointments = appointments.filter(
     (apt) => apt.status === "upcoming"
   )

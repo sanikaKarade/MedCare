@@ -1,40 +1,29 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { getPrisma } from "@/lib/prisma"
+import { doctors } from "@/lib/data"
 
 export async function GET() {
   try {
+    const prisma = await getPrisma()
+
+    await prisma.appointment.deleteMany()
+    await prisma.doctor.deleteMany()
+
     await prisma.doctor.createMany({
-      data: [
-        {
-          name: "Dr. Amit Sharma",
-          specialization: "Cardiologist",
-          experience: 10,
-          consultationFee: 500,
-          city: "Bhopal",
-          hospital: "City Hospital",
-        },
-        {
-          name: "Dr. Priya Patel",
-          specialization: "Dermatologist",
-          experience: 7,
-          consultationFee: 700,
-          city: "Indore",
-          hospital: "Care Hospital",
-        },
-        {
-          name: "Dr. Raj Verma",
-          specialization: "Orthopedic",
-          experience: 12,
-          consultationFee: 800,
-          city: "Bhopal",
-          hospital: "Apollo Clinic",
-        },
-      ],
+      data: doctors.map((doctor) => ({
+        id: doctor.id,
+        name: doctor.name,
+        specialization: doctor.specialization,
+        experience: doctor.experience,
+        consultationFee: doctor.consultationFee,
+        imageUrl: doctor.image,
+        hospital: doctor.hospital,
+      })),
     })
 
     return NextResponse.json({
       success: true,
-      message: "Doctors added successfully",
+      message: `Seeded ${doctors.length} doctors`,
     })
   } catch (error) {
     console.error(error)
