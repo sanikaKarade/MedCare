@@ -12,7 +12,7 @@ const globalForPrisma = globalThis as unknown as {
 const dataDir = path.join(process.cwd(), "prisma", "pglite-data")
 
 const schemaSql = `
-CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED');
+CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'ONGOING', 'COMPLETED', 'CANCELLED');
 
 CREATE TABLE "Doctor" (
   "id" TEXT NOT NULL,
@@ -38,6 +38,7 @@ CREATE TABLE "Appointment" (
   "appointmentTime" TEXT NOT NULL,
   "reason" TEXT,
   "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING',
+  "meetingLink" TEXT,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "Appointment_pkey" PRIMARY KEY ("id"),

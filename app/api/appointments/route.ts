@@ -5,7 +5,8 @@ export async function POST(request: Request) {
   try {
     const prisma = await getPrisma()
     const body = await request.json()
-
+    const roomId = `medcare-${Date.now()}`
+    const meetingLink = `https://meet.jit.si/${roomId}`
     const appointment = await prisma.appointment.create({
       data: {
         patientId: body.patientId,
@@ -15,6 +16,8 @@ export async function POST(request: Request) {
         appointmentDate: new Date(body.appointmentDate),
         appointmentTime: body.appointmentTime,
         reason: body.reason,
+        meetingLink,
+        status: "CONFIRMED",    
       },
     })
 
