@@ -31,6 +31,7 @@ export default function AppointmentsPage() {
           date: apt.appointmentDate,
           time: apt.appointmentTime,
           symptoms: apt.reason,
+          meetingLink: apt.meetingLink,
           status: "upcoming",
         }))  
         setAppointments(formatted)
@@ -136,19 +137,33 @@ export default function AppointmentsPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {getStatusBadge(apt.status)}
-            {showActions && apt.status === "upcoming" && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => handleCancel(apt.id)}
-              >
-                <X className="mr-1 h-4 w-4" />
-                Cancel
-              </Button>
-            )}
-          </div>
+  {getStatusBadge(apt.status)}
+
+  {apt.meetingLink && (
+    <Button asChild size="sm">
+      <a
+        href={apt.meetingLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Video className="mr-2 h-4 w-4" />
+        Join Consultation
+      </a>
+    </Button>
+  )}
+
+  {showActions && apt.status === "upcoming" && (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+      onClick={() => handleCancel(apt.id)}
+    >
+      <X className="mr-1 h-4 w-4" />
+      Cancel
+    </Button>
+  )}
+</div>
         </div>
       </CardContent>
     </Card>
