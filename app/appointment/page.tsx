@@ -101,6 +101,20 @@ const [doctors, setDoctors] = useState<any[]>([])
   }, [])
 
   const handleSubmit = async () => {
+    if (!patientName.trim()) {
+      alert("Patient name is required")
+      return
+    }
+  
+    if (!patientPhone.trim()) {
+      alert("Phone number is required")
+      return
+    }
+  
+    if (!/^[6-9]\d{9}$/.test(patientPhone)) {
+      alert("Please enter a valid 10-digit phone number")
+      return
+    }
     try {
       setIsSubmitting(true)
   
@@ -287,7 +301,7 @@ const [doctors, setDoctors] = useState<any[]>([])
 
     <div className="flex justify-end">
       <Button
-        onClick={() => setStep(2)}
+        onClick={() => setStep(3)}
         disabled={!selectedDoctor}
       >
         Continue
@@ -297,7 +311,7 @@ const [doctors, setDoctors] = useState<any[]>([])
   </div>
 )}
 
-{/* Step 2: Select Date & Time */}
+{/* Step 3: Select Date & Time */}
 {step === 3 && (
   <div className="space-y-6">
     <div>
@@ -352,7 +366,7 @@ const [doctors, setDoctors] = useState<any[]>([])
         Back
       </Button>
       <Button
-        onClick={() => setStep(3)}
+        onClick={() => setStep(4)}
         disabled={!selectedDate || !selectedTime}
       >
         Continue
@@ -364,36 +378,26 @@ const [doctors, setDoctors] = useState<any[]>([])
      {step === 4 && (
 <div className="space-y-6">
 <div>
-<Label>Patient Name</Label>
-<Input
-value={patientName}
-onChange={(e) => setPatientName(e.target.value)}
-placeholder="Enter your name"
-/>
+  <Label>
+    Patient Name <span className="text-red-500">*</span>
+  </Label>
+  <Input
+    value={patientName}
+    onChange={(e) => setPatientName(e.target.value)}
+    placeholder="Enter your name"
+  />
 </div>
 
 <div>
-<Label>Phone Number</Label>
-<Input
-value={patientPhone}
-onChange={(e) => setPatientPhone(e.target.value)}
-placeholder="Enter phone number"
-/>
+  <Label>
+    Phone Number <span className="text-red-500">*</span>
+  </Label>
+  <Input
+    value={patientPhone}
+    onChange={(e) => setPatientPhone(e.target.value)}
+    placeholder="Enter phone number"
+  />
 </div>
-
-<div>
-<Label htmlFor="symptoms">
-Describe your symptoms (optional)
-</Label>
-<Textarea
-id="symptoms"
-placeholder="Please describe your symptoms or reason for visit..."
-value={symptoms}
-onChange={(e) => setSymptoms(e.target.value)}
-className="mt-2 min-h-[120px]"
-/>
-</div>
-
     <div className="rounded-lg border bg-secondary/30 p-4">
       <h4 className="font-semibold">Appointment Summary</h4>
       <div className="mt-3 space-y-2 text-sm">
@@ -435,7 +439,9 @@ className="mt-2 min-h-[120px]"
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
-      <Button onClick={handleSubmit} disabled={isSubmitting}>
+      <Button onClick={handleSubmit} disabled={isSubmitting ||
+    !patientName.trim() ||
+    !patientPhone.trim()}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
