@@ -205,3 +205,29 @@ if (loading) {
     </div>
   )
 }
+<Button
+  variant="outline"
+  onClick={async () => {
+    try {
+      await fetch(
+        "/api/doctors/update-status",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: apt.id,
+            status: "COMPLETED",
+          }),
+        }
+      )
+
+      location.reload()
+    } catch (error) {
+      console.error(error)
+    }
+  }}
+>
+  Complete
+</Button>
