@@ -176,3 +176,6 @@ export function Navbar() {
     </header>
   )
 }
+<Link href="/doctor/appointments">
+  Doctor Dashboard
+</Link>
