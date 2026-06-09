@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server"
-import { getPrisma } from "@/lib/prisma"
+import { prisma } from "@/lib/prisma"
 
 export async function POST(request: Request) {
   try {
-    const prisma = await getPrisma()
     const body = await request.json()
+
     const roomId = `medcare-${Date.now()}`
     const meetingLink = `https://meet.jit.si/${roomId}`
+
     const appointment = await prisma.appointment.create({
       data: {
         patientId: body.patientId,
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
         appointmentTime: body.appointmentTime,
         reason: body.reason,
         meetingLink,
-        status: "CONFIRMED",    
+        status: "CONFIRMED",
       },
     })
 
@@ -31,15 +32,15 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
+        error: "Failed to create appointment",
       },
       { status: 500 }
     )
   }
 }
+
 export async function GET() {
   try {
-    const prisma = await getPrisma()
-
     const appointments = await prisma.appointment.findMany({
       orderBy: {
         appointmentDate: "desc",

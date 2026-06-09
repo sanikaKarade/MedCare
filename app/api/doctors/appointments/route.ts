@@ -3,7 +3,7 @@ import { getPrisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const prisma = await getPrisma()
+    import { prisma } from "@/lib/prisma"
 
     const appointments = await prisma.appointment.findMany({
       include: {

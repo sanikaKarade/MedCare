@@ -3,7 +3,7 @@ import { getPrisma } from "@/lib/prisma"
 
 export async function POST(request: Request) {
   try {
-    const prisma = await getPrisma()
+    import { prisma } from "@/lib/prisma"
 
     const body = await request.json()
 

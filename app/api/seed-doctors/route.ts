@@ -4,7 +4,7 @@ import { doctors } from "@/lib/data"
 
 export async function GET() {
   try {
-    const prisma = await getPrisma()
+    import { prisma } from "@/lib/prisma"
 
     await prisma.appointment.deleteMany()
     await prisma.doctor.deleteMany()
