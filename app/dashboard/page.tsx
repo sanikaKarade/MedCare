@@ -14,25 +14,19 @@ import {
   ArrowRight,
   Activity,
 } from "lucide-react"
-import {
-  appointments,
-  prescriptions,
-  healthRecords,
-  notifications,
-} from "@/lib/data"
+const prescriptions: any[] = []
+const notifications: any[] = []
 
 export default function DashboardPage() {
   const { user } = useUser()
 
-  const upcomingAppointments = appointments.filter(
-    (apt) => apt.status === "upcoming"
-  )
-  const unreadNotifications = notifications.filter((n) => !n.read)
+  const upcomingAppointments: any[] = []
+  const unreadNotifications: any[] = []
 
   const stats = [
     {
       title: "Upcoming Appointments",
-      value: upcomingAppointments.length,
+      value: 0,
       icon: Calendar,
       href: "/dashboard/appointments",
       color: "bg-blue-100 text-blue-700",
@@ -46,20 +40,19 @@ export default function DashboardPage() {
     },
     {
       title: "Health Records",
-      value: healthRecords.length,
+      value: 0,
       icon: FolderHeart,
       href: "/dashboard/records",
       color: "bg-amber-100 text-amber-700",
     },
     {
       title: "Notifications",
-      value: unreadNotifications.length,
+      value: 0,
       icon: Bell,
       href: "/dashboard/notifications",
       color: "bg-red-100 text-red-700",
     },
   ]
-
   return (
     <div className="space-y-6">
       {/* Welcome section */}

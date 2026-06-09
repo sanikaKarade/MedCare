@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server"
-import { getPrisma } from "@/lib/prisma"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const prisma = await getPrisma()
     const doctors = await prisma.doctor.findMany()
 
     return NextResponse.json(doctors)

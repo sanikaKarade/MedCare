@@ -1,10 +1,10 @@
 import "dotenv/config"
-import { getPrisma } from "../lib/prisma"
+import { PrismaClient } from "../lib/generated/prisma/client"
 import { doctors } from "../lib/data"
 
-async function main() {
-  const prisma = await getPrisma()
+const prisma = new PrismaClient()
 
+async function main() {
   await prisma.appointment.deleteMany()
   await prisma.doctor.deleteMany()
 
@@ -17,6 +17,7 @@ async function main() {
       consultationFee: doctor.consultationFee,
       imageUrl: doctor.image,
       hospital: doctor.hospital,
+      city: doctor.city ?? null,
     })),
   })
 
@@ -24,8 +25,10 @@ async function main() {
 }
 
 main()
-  .catch(console.error)
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })
   .finally(async () => {
-    const prisma = await getPrisma()
     await prisma.$disconnect()
   })

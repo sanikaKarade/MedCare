@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Doctor {
@@ -35,6 +36,7 @@ model Appointment {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  prescription    Prescription?
 }
 
 enum AppointmentStatus {
@@ -43,4 +45,33 @@ enum AppointmentStatus {
   ONGOING
   COMPLETED
   CANCELLED
+}
+
+model Prescription {
+  id            String @id @default(cuid())
+  appointmentId String @unique
+
+  diagnosis    String
+  tests        String?
+  notes        String?
+  followUpDate DateTime?
+
+  createdAt DateTime @default(now())
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+
+  medicines Medicine[]
+}
+
+model Medicine {
+  id String @id @default(cuid())
+
+  prescriptionId String
+
+  name      String
+  dosage    String
+  frequency String
+  duration  String
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id])
 }
