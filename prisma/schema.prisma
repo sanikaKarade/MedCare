@@ -1,77 +1,113 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+interface DoctorCardProps {
+  doctor: {
+    id: string
+    name: string
+    specialization: string
+    experience: number
+    consultationFee: number
+    imageUrl?: string | null
+    hospital?: string | null
+    city?: string | null
+  }
+  variant?: "default" | "compact"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+export function DoctorCard({
+  doctor,
+  variant = "default",
+}: DoctorCardProps) {
+  if (variant === "compact") {
+    return (
+      <Card className="overflow-hidden">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 overflow-hidden rounded-full bg-gray-100">
+              <Image
+                src={doctor.imageUrl || "/doctor-placeholder.jpg"}
+                alt={doctor.name}
+                fill
+                className="object-cover"
+              />
+            </div>
 
-model Doctor {
-  id              String        @id @default(cuid())
-  name            String
-  specialization  String
-  experience      Int
-  consultationFee Int
-  imageUrl        String?
-  hospital        String?
-  city            String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  appointments    Appointment[]
-}
+            <div>
+              <h3 className="font-semibold">{doctor.name}</h3>
+              <p className="text-sm text-muted-foreground">
+                {doctor.specialization}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
-model Appointment {
-  id              String            @id @default(cuid())
-  patientId       String
-  doctorId        String
-  patientName     String
-  patientPhone    String
-  appointmentDate DateTime
-  appointmentTime String
-  reason          String?
-  status          AppointmentStatus @default(PENDING)
-  meetingLink     String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  doctor          Doctor            @relation(fields: [doctorId], references: [id])
-  prescription    Prescription?
-}
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-0">
+        <div className="relative aspect-square bg-gray-100">
+          <Image
+            src={doctor.imageUrl || "/doctor-placeholder.jpg"}
+            alt={doctor.name}
+            fill
+            className="object-cover"
+          />
 
-enum AppointmentStatus {
-  PENDING
-  CONFIRMED
-  ONGOING
-  COMPLETED
-  CANCELLED
-}
+          <Badge className="absolute top-3 right-3 bg-green-100 text-green-700">
+            Available
+          </Badge>
+        </div>
 
-model Prescription {
-  id            String @id @default(cuid())
-  appointmentId String @unique
+        <div className="p-5">
+          <h3 className="text-lg font-semibold">
+            {doctor.name}
+          </h3>
 
-  diagnosis    String
-  tests        String?
-  notes        String?
-  followUpDate DateTime?
+          <p className="text-sm text-muted-foreground">
+            {doctor.specialization}
+          </p>
 
-  createdAt DateTime @default(now())
+          <p className="mt-2 text-sm">
+            {doctor.experience} years experience
+          </p>
 
-  appointment Appointment @relation(fields: [appointmentId], references: [id])
+          {doctor.hospital && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {doctor.hospital}
+            </p>
+          )}
 
-  medicines Medicine[]
-}
+          {doctor.city && (
+            <p className="text-sm text-muted-foreground">
+              {doctor.city}
+            </p>
+          )}
 
-model Medicine {
-  id String @id @default(cuid())
+          <p className="mt-2 font-semibold text-primary">
+            ₹{doctor.consultationFee}
+          </p>
 
-  prescriptionId String
+          <div className="mt-4 flex gap-2">
+            <Button variant="outline" className="flex-1" asChild>
+              <Link href={`/doctors/${doctor.id}`}>
+                View Profile
+              </Link>
+            </Button>
 
-  name      String
-  dosage    String
-  frequency String
-  duration  String
-
-  prescription Prescription @relation(fields: [prescriptionId], references: [id])
+            <Button className="flex-1" asChild>
+              <Link href={`/appointment?doctor=${doctor.id}`}>
+                Book Now
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
