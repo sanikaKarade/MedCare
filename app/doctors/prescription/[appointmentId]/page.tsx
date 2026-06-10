@@ -2,7 +2,13 @@
 
 import { useState } from "react"
 
+import { useParams } from "next/navigation"
+
 export default function PrescriptionPage() {
+  const params = useParams()
+
+  const appointmentId =
+    params.appointmentId as string 
   const [diagnosis, setDiagnosis] = useState("")
   const [notes, setNotes] = useState("")
   const [followUpDate, setFollowUpDate] = useState("")
@@ -26,6 +32,35 @@ export default function PrescriptionPage() {
         duration: "",
       },
     ])
+  }
+  const savePrescription = async () => {
+    try {
+      const response = await fetch(
+        "/api/prescriptions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            appointmentId,
+            diagnosis,
+            notes,
+            followUpDate,
+            medicines,
+          }),
+        }
+      )
+  
+      if (!response.ok) {
+        throw new Error("Failed")
+      }
+  
+      alert("Prescription saved successfully")
+    } catch (error) {
+      console.error(error)
+      alert("Failed to save prescription")
+    }
   }
 
   return (
@@ -124,10 +159,11 @@ export default function PrescriptionPage() {
           </button>
 
           <button
-            className="bg-green-600 text-white px-6 py-2 rounded"
-          >
-            Save Prescription
-          </button>
+  onClick={savePrescription}
+  className="bg-green-600 text-white px-6 py-2 rounded"
+>
+  Save Prescription
+</button>
         </div>
       </div>
     </div>

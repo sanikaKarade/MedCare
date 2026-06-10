@@ -3,8 +3,10 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star } from "lucide-react"
-import type { Doctor } from "@/lib/data"
+interface DoctorCardProps {
+  doctor: any
+  variant?: "default" | "compact"
+}
 
 interface DoctorCardProps {
   doctor: Doctor
@@ -30,10 +32,9 @@ export function DoctorCard({ doctor, variant = "default" }: DoctorCardProps) {
               <p className="text-sm text-muted-foreground">
                 {doctor.specialization}
               </p>
-              <div className="mt-1 flex items-center gap-1">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                <span className="text-xs font-medium">{doctor.rating}</span>
-              </div>
+              <p className="text-xs text-muted-foreground">
+  {doctor.experience} years experience
+</p>
             </div>
           </div>
         </CardContent>
@@ -45,36 +46,34 @@ export function DoctorCard({ doctor, variant = "default" }: DoctorCardProps) {
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
       <CardContent className="p-0">
         <div className="relative aspect-square bg-secondary overflow-hidden">
-          <Image
-            src={doctor.image}
-            alt={doctor.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          <Badge
-            className={`absolute right-3 top-3 transition-transform duration-300 group-hover:scale-105 ${
-              doctor.availability.includes("Today")
-                ? "bg-green-100 text-green-700 hover:bg-green-100"
-                : "bg-amber-100 text-amber-700 hover:bg-amber-100"
-            }`}
-          >
-            {doctor.availability}
-          </Badge>
+        <Image
+  src={doctor.imageUrl || "/placeholder-user.jpg"}
+  alt={doctor.name}
+  fill
+  className="object-cover transition-transform duration-300 group-hover:scale-110"
+/>
+<Badge className="absolute right-3 top-3 bg-green-100 text-green-700">
+  Available
+</Badge>
         </div>
         <div className="p-5">
           <h3 className="text-lg font-semibold">{doctor.name}</h3>
           <p className="text-sm text-muted-foreground">
             {doctor.specialization}
           </p>
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-              <span className="text-sm font-medium">{doctor.rating}</span>
-              <span className="text-sm text-muted-foreground">
-                ({doctor.reviews} reviews)
-              </span>
-            </div>
-          </div>
+          <div className="mt-3">
+  {doctor.hospital && (
+    <p className="text-sm text-muted-foreground">
+      {doctor.hospital}
+    </p>
+  )}
+
+  {doctor.city && (
+    <p className="text-sm text-muted-foreground">
+      {doctor.city}
+    </p>
+  )}
+</div>
           <p className="mt-2 text-sm text-muted-foreground">
             {doctor.experience} years experience
           </p>

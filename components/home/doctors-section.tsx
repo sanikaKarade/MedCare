@@ -1,11 +1,12 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { DoctorCard } from "@/components/doctor-card"
-import { doctors } from "@/lib/data"
-
-export function DoctorsSection() {
+import { prisma } from "@/lib/prisma"
+export async function DoctorsSection() {
   // Show first 3 doctors on homepage
-  const featuredDoctors = doctors.slice(0, 3)
+  const featuredDoctors = await prisma.doctor.findMany({
+    take: 3,
+  })
 
   return (
     <section className="bg-secondary/30 py-20">
