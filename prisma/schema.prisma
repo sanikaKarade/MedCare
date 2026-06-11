@@ -1,113 +1,70 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-
-interface DoctorCardProps {
-  doctor: {
-    id: string
-    name: string
-    specialization: string
-    experience: number
-    consultationFee: number
-    imageUrl?: string | null
-    hospital?: string | null
-    city?: string | null
-  }
-  variant?: "default" | "compact"
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
 }
 
-export function DoctorCard({
-  doctor,
-  variant = "default",
-}: DoctorCardProps) {
-  if (variant === "compact") {
-    return (
-      <Card className="overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16 overflow-hidden rounded-full bg-gray-100">
-              <Image
-                src={doctor.imageUrl || "/doctor-placeholder.jpg"}
-                alt={doctor.name}
-                fill
-                className="object-cover"
-              />
-            </div>
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-            <div>
-              <h3 className="font-semibold">{doctor.name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {doctor.specialization}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
+model Appointment {
+  id              String            @id
+  patientId       String
+  doctorId        String
+  patientName     String
+  patientPhone    String
+  appointmentDate DateTime
+  appointmentTime String
+  reason          String?
+  status          AppointmentStatus @default(PENDING)
+  meetingLink     String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  Doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  Prescription    Prescription?
+}
 
-  return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-0">
-        <div className="relative aspect-square bg-gray-100">
-          <Image
-            src={doctor.imageUrl || "/doctor-placeholder.jpg"}
-            alt={doctor.name}
-            fill
-            className="object-cover"
-          />
+model Doctor {
+  id              String        @id
+  name            String
+  specialization  String
+  experience      Int
+  consultationFee Int
+  imageUrl        String?
+  hospital        String?
+  city            String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  Appointment     Appointment[]
+}
 
-          <Badge className="absolute top-3 right-3 bg-green-100 text-green-700">
-            Available
-          </Badge>
-        </div>
+model Medicine {
+  id             String       @id
+  prescriptionId String
+  name           String
+  dosage         String
+  frequency      String
+  duration       String
+  Prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+}
 
-        <div className="p-5">
-          <h3 className="text-lg font-semibold">
-            {doctor.name}
-          </h3>
+model Prescription {
+  id            String      @id
+  appointmentId String      @unique
+  diagnosis     String
+  tests         String?
+  notes         String?
+  followUpDate  DateTime?
+  createdAt     DateTime    @default(now())
+  Medicine      Medicine[]
+  Appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
 
-          <p className="text-sm text-muted-foreground">
-            {doctor.specialization}
-          </p>
-
-          <p className="mt-2 text-sm">
-            {doctor.experience} years experience
-          </p>
-
-          {doctor.hospital && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {doctor.hospital}
-            </p>
-          )}
-
-          {doctor.city && (
-            <p className="text-sm text-muted-foreground">
-              {doctor.city}
-            </p>
-          )}
-
-          <p className="mt-2 font-semibold text-primary">
-            ₹{doctor.consultationFee}
-          </p>
-
-          <div className="mt-4 flex gap-2">
-            <Button variant="outline" className="flex-1" asChild>
-              <Link href={`/doctors/${doctor.id}`}>
-                View Profile
-              </Link>
-            </Button>
-
-            <Button className="flex-1" asChild>
-              <Link href={`/appointment?doctor=${doctor.id}`}>
-                Book Now
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  ONGOING
+  COMPLETED
+  CANCELLED
 }
