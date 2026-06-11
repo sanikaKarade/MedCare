@@ -1,10 +1,11 @@
+import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { getPrisma } from "@/lib/prisma"
 import { doctors } from "@/lib/data"
 
 export async function GET() {
   try {
-    import { prisma } from "@/lib/prisma"
+    
 
     await prisma.appointment.deleteMany()
     await prisma.doctor.deleteMany()

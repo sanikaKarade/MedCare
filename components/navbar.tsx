@@ -98,17 +98,26 @@ export function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-default">
-                  <UserButton />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+
+<DropdownMenuItem asChild>
+  <Link href="/dashboard">
+    Dashboard
+  </Link>
+</DropdownMenuItem>
+
+<DropdownMenuItem asChild>
+  <Link href="/doctor/appointments">
+    Doctor Dashboard
+  </Link>
+</DropdownMenuItem>
+
+<DropdownMenuSeparator />
+
+<DropdownMenuItem>
+  <UserButton />
+</DropdownMenuItem>
+
+</DropdownMenuContent>
             </DropdownMenu>
           </Show>
         </div>
@@ -176,6 +185,3 @@ export function Navbar() {
     </header>
   )
 }
-<Link href="/doctor/appointments">
-  Doctor Dashboard
-</Link>
