@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Appointment {
-  id              String            @id
+  id              String            @id @default(cuid())
   patientId       String
   doctorId        String
   patientName     String
@@ -20,13 +20,13 @@ model Appointment {
   status          AppointmentStatus @default(PENDING)
   meetingLink     String?
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime
-  Doctor          Doctor            @relation(fields: [doctorId], references: [id])
-  Prescription    Prescription?
+  updatedAt       DateTime          @updatedAt
+  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  prescription    Prescription?
 }
 
 model Doctor {
-  id              String        @id
+  id              String        @id @default(cuid())
   name            String
   specialization  String
   experience      Int
@@ -35,30 +35,31 @@ model Doctor {
   hospital        String?
   city            String?
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime
-  Appointment     Appointment[]
+  updatedAt       DateTime      @updatedAt
+  appointments    Appointment[]
+}
+
+model Prescription {
+  id            String      @id @default(cuid())
+  appointmentId String      @unique
+  diagnosis     String
+  tests         String?
+  notes         String?
+  advice        String?
+  followUpDate  DateTime?
+  createdAt     DateTime    @default(now())
+  medicines     Medicine[]
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
 }
 
 model Medicine {
-  id             String       @id
+  id             String       @id @default(cuid())
   prescriptionId String
   name           String
   dosage         String
   frequency      String
   duration       String
-  Prescription   Prescription @relation(fields: [prescriptionId], references: [id])
-}
-
-model Prescription {
-  id            String      @id
-  appointmentId String      @unique
-  diagnosis     String
-  tests         String?
-  notes         String?
-  followUpDate  DateTime?
-  createdAt     DateTime    @default(now())
-  Medicine      Medicine[]
-  Appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
 }
 
 enum AppointmentStatus {
