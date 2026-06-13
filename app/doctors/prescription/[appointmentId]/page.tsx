@@ -1,66 +1,28 @@
-"use client"
+import { prisma } from "@/lib/prisma"
+import PrescriptionForm from "@/components/prescription-form"
 
-import { useState } from "react"
+export default async function PrescriptionPage({
+  params,
+}: {
+  params: Promise<{ appointmentId: string }>
+}) {
+  const { appointmentId } = await params
 
-import { useParams } from "next/navigation"
-
-export default function PrescriptionPage() {
-  const params = useParams()
-
-  const appointmentId =
-    params.appointmentId as string 
-  const [diagnosis, setDiagnosis] = useState("")
-  const [notes, setNotes] = useState("")
-  const [followUpDate, setFollowUpDate] = useState("")
-
-  const [medicines, setMedicines] = useState([
-    {
-      name: "",
-      dosage: "",
-      frequency: "",
-      duration: "",
+  const appointment = await prisma.appointment.findUnique({
+    where: {
+      id: appointmentId,
     },
-  ])
+    include: {
+      doctor: true,
+    },
+  })
 
-  const addMedicine = () => {
-    setMedicines([
-      ...medicines,
-      {
-        name: "",
-        dosage: "",
-        frequency: "",
-        duration: "",
-      },
-    ])
-  }
-  const savePrescription = async () => {
-    try {
-      const response = await fetch(
-        "/api/prescriptions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            appointmentId,
-            diagnosis,
-            notes,
-            followUpDate,
-            medicines,
-          }),
-        }
-      )
-  
-      if (!response.ok) {
-        throw new Error("Failed")
-      }
-  
-      alert("Prescription saved successfully")
-    } catch (error) {
-      console.error(error)
-      alert("Failed to save prescription")
-    }
+  if (!appointment) {
+    return (
+      <div className="p-6">
+        Appointment not found
+      </div>
+    )
   }
 
   return (
@@ -69,103 +31,30 @@ export default function PrescriptionPage() {
         Generate Prescription
       </h1>
 
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Diagnosis"
-          value={diagnosis}
-          onChange={(e) => setDiagnosis(e.target.value)}
-          className="w-full border p-3 rounded"
-        />
-
-        <textarea
-          placeholder="Doctor Notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className="w-full border p-3 rounded"
-          rows={4}
-        />
-
-        <input
-          type="date"
-          value={followUpDate}
-          onChange={(e) => setFollowUpDate(e.target.value)}
-          className="border p-3 rounded"
-        />
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">
-          Medicines
+      <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <h2 className="font-semibold text-lg mb-3">
+          Patient Details
         </h2>
 
-        {medicines.map((medicine, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-4 gap-3 mb-3"
-          >
-            <input
-              value={medicine.name}
-              onChange={(e) => {
-                const updated = [...medicines]
-                updated[index].name = e.target.value
-                setMedicines(updated)
-              }}
-              placeholder="Medicine Name"
-              className="border p-2 rounded"
-            />
+        <p>
+          <strong>Name:</strong>{" "}
+          {appointment.patientName}
+        </p>
 
-            <input
-              value={medicine.dosage}
-              onChange={(e) => {
-                const updated = [...medicines]
-                updated[index].dosage = e.target.value
-                setMedicines(updated)
-              }}
-              placeholder="Dosage"
-              className="border p-2 rounded"
-            />
+        <p>
+          <strong>Phone:</strong>{" "}
+          {appointment.patientPhone}
+        </p>
 
-            <input
-              value={medicine.frequency}
-              onChange={(e) => {
-                const updated = [...medicines]
-                updated[index].frequency = e.target.value
-                setMedicines(updated)
-              }}
-              placeholder="Frequency"
-              className="border p-2 rounded"
-            />
-
-            <input
-              value={medicine.duration}
-              onChange={(e) => {
-                const updated = [...medicines]
-                updated[index].duration = e.target.value
-                setMedicines(updated)
-              }}
-              placeholder="Duration"
-              className="border p-2 rounded"
-            />
-          </div>
-        ))}
-
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={addMedicine}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Add Medicine
-          </button>
-
-          <button
-  onClick={savePrescription}
-  className="bg-green-600 text-white px-6 py-2 rounded"
->
-  Save Prescription
-</button>
-        </div>
+        <p>
+          <strong>Date:</strong>{" "}
+          {appointment.appointmentDate.toLocaleDateString()}
+        </p>
       </div>
+
+      <PrescriptionForm
+        appointmentId={appointment.id}
+      />
     </div>
   )
 }

@@ -9,6 +9,8 @@ export async function POST(req: Request) {
       data: {
         appointmentId: body.appointmentId,
         diagnosis: body.diagnosis,
+        tests: body.tests,
+        advice: body.advice,
         notes: body.notes,
         followUpDate: body.followUpDate
           ? new Date(body.followUpDate)

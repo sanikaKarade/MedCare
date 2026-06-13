@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Navbar } from "@/components/navbar"
+import { doctors } from "@/lib/data"
 import {
   Stethoscope,
   Building2,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react"
 
 export default async function DoctorsPage() {
-  const doctors = await prisma.doctor.findMany()
+  
 
   return (
     <>
