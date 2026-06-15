@@ -123,3 +123,18 @@
     @apply bg-background text-foreground;
   }
 }
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}

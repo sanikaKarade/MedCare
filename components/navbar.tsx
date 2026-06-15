@@ -106,7 +106,7 @@ export function Navbar() {
 </DropdownMenuItem>
 
 <DropdownMenuItem asChild>
-  <Link href="/doctor/appointments">
+  <Link href="/doctors/appointments">
     Doctor Dashboard
   </Link>
 </DropdownMenuItem>
