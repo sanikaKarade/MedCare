@@ -10,7 +10,7 @@ export async function POST(req: Request) {
         appointmentId: body.appointmentId,
         diagnosis: body.diagnosis,
         tests: body.tests,
-        advice: body.advice,
+        // advice: body.advice,
         notes: body.notes,
         followUpDate: body.followUpDate
           ? new Date(body.followUpDate)
@@ -25,7 +25,6 @@ export async function POST(req: Request) {
           })),
         },
       },
-      
 
       include: {
         medicines: true,
@@ -33,11 +32,14 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(prescription)
-  } catch (error) {
+  } catch (error: any) {
+    console.error("FULL ERROR:")
     console.error(error)
 
     return NextResponse.json(
-      { error: "Failed to save prescription" },
+      {
+        error: error?.message || "Unknown error",
+      },
       { status: 500 }
     )
   }

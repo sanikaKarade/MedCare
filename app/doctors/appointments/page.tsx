@@ -115,6 +115,13 @@ export default function DoctorAppointmentsPage() {
       Complete
     </Button>
   )}
+ {apt.status === "COMPLETED" && (
+  <Link href={`/doctors/prescription/${apt.id}`}>
+    <Button>
+      Generate Prescription
+    </Button>
+  </Link>
+)}
 </div>
             </CardContent>
           </Card>

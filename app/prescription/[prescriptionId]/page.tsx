@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
+import PrintButton from "@/components/PrintButton"
 
 interface PageProps {
   params: Promise<{
@@ -31,7 +32,7 @@ export default async function PrescriptionViewPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 print-container">
       <div className="border rounded-xl p-8 bg-white shadow-sm">
         <div className="border-b pb-4 mb-6">
           <h1 className="text-3xl font-bold">
@@ -188,13 +189,9 @@ export default async function PrescriptionViewPage({
           </div>
         )}
 
-        <div className="mt-8 flex gap-3">
-        <button
-  className="bg-blue-600 text-white px-5 py-2 rounded"
->
-  Print Prescription
-</button>
-           </div>
+<div className="mt-8 flex gap-3">
+  <PrintButton />
+</div>
       </div>
     </div>
   )

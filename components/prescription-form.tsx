@@ -54,7 +54,7 @@ export default function PrescriptionForm({
   const savePrescription = async () => {
     try {
       const response = await fetch(
-        "/api/prescriptions",
+        "/api/prescription",
         {
           method: "POST",
           headers: {
@@ -72,15 +72,15 @@ export default function PrescriptionForm({
         }
       )
 
-      if (!response.ok) {
-        throw new Error(
-          "Failed to save prescription"
-        )
-      }
+      const data = await response.json()
 
-      router.push(
-        `/doctors/prescription/view/${appointmentId}`
-      )
+if (!response.ok) {
+  throw new Error(
+    data.error || "Failed to save prescription"
+  )
+}
+
+router.push(`/prescription/${data.id}`)
     } catch (error) {
       console.error(error)
       alert("Failed to save prescription")
