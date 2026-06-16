@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, Download, Pill, Clock } from "lucide-react"
 import { EmptyState } from "@/components/states"
+import DownloadPDF from "@/components/downloadPDF"
+import Link from "next/link"
 
 export default async function PrescriptionsPage() {
   const prescriptions = await prisma.prescription.findMany({
@@ -60,10 +62,11 @@ export default async function PrescriptionsPage() {
                     ).toLocaleDateString()}
                   </Badge>
 
-                  <Button variant="outline" size="sm">
-                    <Download className="mr-1 h-4 w-4" />
-                    Download
-                  </Button>
+                  <Link href={`/dashboard/prescriptions/${prescription.id}`}>
+  <Button variant="outline" size="sm">
+    View Prescription
+  </Button>
+</Link>
                 </div>
               </CardHeader>
 
