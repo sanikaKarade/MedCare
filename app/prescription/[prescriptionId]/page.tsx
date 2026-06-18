@@ -18,7 +18,7 @@ export default async function PrescriptionViewPage({
       id: prescriptionId,
     },
     include: {
-      medicines: true,
+      PrescriptionMedicine: true,
       appointment: {
         include: {
           doctor: true,
