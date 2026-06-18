@@ -14,7 +14,7 @@ export default async function PrescriptionDetails({
       id,
     },
     include: {
-      medicines: true,
+      PrescriptionMedicine: true,
       appointment: {
         include: {
           doctor: true,

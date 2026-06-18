@@ -10,7 +10,7 @@ import Link from "next/link"
 export default async function PrescriptionsPage() {
   const prescriptions = await prisma.prescription.findMany({
     include: {
-      medicines: true,
+      PrescriptionMedicine: true,
       appointment: {
         include: {
           doctor: true,

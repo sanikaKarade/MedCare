@@ -51,11 +51,11 @@ function AppointmentContent() {
 
   const doctor = doctors.find((d) => d.id === selectedDoctor)
   const symptomsList = [
-    "Eye Problem",
+    "Weight Loss",
     "Skin Problem",
-    "Stomach Pain",
-    "Back Pain",
-    "Chest Pain",
+    "Supplements",
+    "Hair Loss",
+    "Skin Care",
     "Women's Health",
     "Men's Health",
     "Mental Health",
