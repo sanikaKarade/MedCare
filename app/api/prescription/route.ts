@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       },
 
       include: {
-        PrescriptionMedicine: true,
+        medicines: true,
       },
     })
 
