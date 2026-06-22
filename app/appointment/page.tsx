@@ -1,6 +1,5 @@
 "use client"
-
-import { useState, useEffect, Suspense } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -62,12 +61,6 @@ function AppointmentContent() {
     "General Consultation",
   ]
 
-  // useEffect(() => {
-  //   if (!authLoading && !isAuthenticated) {
-  //     router.push("/login?redirect=/appointment")
-  //   }
-  // }, [authLoading, isAuthenticated, router])
-
   const handleSubmit = async () => {
     if (!patientName.trim()) {
       alert("Patient name is required")
@@ -118,7 +111,7 @@ function AppointmentContent() {
   if (authLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingState message="Loading..." />
+        <LoadingState message="Redirecting to login..." />
       </div>
     )
   }
