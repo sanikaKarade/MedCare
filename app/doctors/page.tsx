@@ -47,6 +47,14 @@ export default async function DoctorsPage() {
                 <p>
                   {doctor.hospital}
                 </p>
+                <div className="mt-4">
+  <Link
+    href={`/appointment?doctor=${doctor.id}`}
+    className="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+  >
+    Book Appointment
+  </Link>
+</div>
               </div>
             ))}
           </div>
