@@ -33,6 +33,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/services", label: "Services" },
   { href: "/doctors", label: "Doctors" },
+  { href: "/doctors/register", label: "Register as Doctor" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ]
