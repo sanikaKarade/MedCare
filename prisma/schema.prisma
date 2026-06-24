@@ -24,19 +24,30 @@ model Appointment {
   doctor          Doctor            @relation(fields: [doctorId], references: [id])
   prescription    Prescription?
 }
-
 model Doctor {
-  id              String        @id @default(cuid())
-  name            String
-  specialization  String
-  experience      Int
-  consultationFee Int
-  imageUrl        String?
-  hospital        String?
-  city            String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  appointments    Appointment[]
+  id                String   @id @default(cuid())
+
+  name              String
+
+  email             String?  @unique
+  phone             String?
+
+  aadhaarNumber     String?
+  degree            String?
+
+  specialization    String
+  experience        Int
+
+  consultationFee   Float
+  imageUrl          String?
+
+  hospital          String?
+  city              String?
+
+  appointments      Appointment[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Prescription {
