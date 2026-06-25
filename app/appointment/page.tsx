@@ -1,5 +1,5 @@
 "use client"
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { doctors } from "@/lib/data"
 import {
   Select,
   SelectContent,
@@ -47,6 +47,7 @@ function AppointmentContent() {
   const [patientPhone, setPatientPhone] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [doctors, setDoctors] = useState<any[]>([])
 
   const doctor = doctors.find((d) => d.id === selectedDoctor)
   const symptomsList = [
