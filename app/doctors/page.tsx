@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Navbar } from "@/components/navbar"
-import { doctors } from "@/lib/data"
 import {
   Stethoscope,
   Building2,
@@ -10,6 +9,11 @@ import {
 } from "lucide-react"
 
 export default async function DoctorsPage() {
+  const doctors = await prisma.doctor.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
   
 
   return (
@@ -33,7 +37,7 @@ export default async function DoctorsPage() {
                 </h2>
 
                 <p className="text-blue-600">
-                  {doctor.specialization}
+                  {doctor.specialization || "General Physician"}
                 </p>
 
                 <p className="mt-2">
@@ -44,9 +48,7 @@ export default async function DoctorsPage() {
                   ₹{doctor.consultationFee}
                 </p>
 
-                <p>
-                  {doctor.hospital}
-                </p>
+                <p>{doctor.hospital ?? "Hospital not specified"}</p>
                 <div className="mt-4">
   <Link
     href={`/appointment?doctor=${doctor.id}`}
