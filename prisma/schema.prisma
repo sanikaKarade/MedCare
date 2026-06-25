@@ -25,29 +25,37 @@ model Appointment {
   prescription    Prescription?
 }
 model Doctor {
-  id                String   @id @default(cuid())
+  id                 String   @id @default(cuid())
 
-  name              String
+  name               String
 
-  email             String?  @unique
-  phone             String?
+  email              String?  @unique
+  phone              String?
 
-  aadhaarNumber     String?
-  degree            String?
+  aadhaarNumber      String?
+  registrationNumber String?
 
-  specialization    String
-  experience        Int
+  degree             String?
 
-  consultationFee   Float
-  imageUrl          String?
+  specialization     String
+  experience         Int
 
-  hospital          String?
-  city              String?
+  consultationFee    Float
 
-  appointments      Appointment[]
+  hospital           String?
+  city               String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  imageUrl           String?
+
+  aadhaarFile        String?
+  degreeFile         String?
+  registrationFile   String?
+  profilePhoto       String?
+
+  appointments       Appointment[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Prescription {

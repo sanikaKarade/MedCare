@@ -10,48 +10,102 @@ import { Label } from "@/components/ui/label"
 export default function DoctorRegisterPage() {
   const router = useRouter()
 
+  const [loading, setLoading] = useState(false)
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     aadhaarNumber: "",
+    registrationNumber: "",
     degree: "",
     specialization: "",
-    registrationNumber: "",
     experience: "",
+    consultationFee: "",
     hospital: "",
     city: "",
-    consultationFee: "",
   })
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    })
+    }))
+  }
+
+  const handleSubmit = async () => {
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.specialization
+    ) {
+      alert("Please fill all required fields.")
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const res = await fetch("/api/doctors/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(data.error || "Registration Failed")
+        return
+      }
+
+      alert("Doctor Registered Successfully!")
+
+      router.push("/doctors")
+    } catch (error) {
+      console.error(error)
+      alert("Something went wrong.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-6 px-4">
-      <div className="max-w-xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-10 px-4">
+      <div className="max-w-5xl mx-auto">
+
         {/* Header */}
+
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-slate-900">
             Doctor Registration
           </h1>
-          <p className="text-slate-600 mt-2">
+
+          <p className="text-slate-600 mt-3">
             Join MedCare Connect and start consulting patients online.
           </p>
         </div>
-  
-        {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-lg border p-6">
-        <div className="grid md:grid-cols-2 gap-4">
-  
+
+        {/* Card */}
+
+        <div className="bg-white rounded-2xl shadow-xl border p-8">
+
+          <h2 className="text-2xl font-semibold mb-6">
+            Personal Details
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+
             <div>
-              <Label className="mb-2 block">Full Name</Label>
+              <Label className="mb-2 block">
+                Full Name *
+              </Label>
+
               <Input
                 name="name"
                 value={formData.name}
@@ -59,9 +113,12 @@ export default function DoctorRegisterPage() {
                 placeholder="Dr. Rahul Sharma"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Email</Label>
+              <Label className="mb-2 block">
+                Email *
+              </Label>
+
               <Input
                 type="email"
                 name="email"
@@ -70,9 +127,12 @@ export default function DoctorRegisterPage() {
                 placeholder="doctor@email.com"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Phone Number</Label>
+              <Label className="mb-2 block">
+                Phone Number *
+              </Label>
+
               <Input
                 name="phone"
                 value={formData.phone}
@@ -80,9 +140,12 @@ export default function DoctorRegisterPage() {
                 placeholder="9876543210"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Aadhaar Number</Label>
+              <Label className="mb-2 block">
+                Aadhaar Number
+              </Label>
+
               <Input
                 name="aadhaarNumber"
                 value={formData.aadhaarNumber}
@@ -90,20 +153,25 @@ export default function DoctorRegisterPage() {
                 placeholder="XXXX XXXX XXXX"
               />
             </div>
+
             <div>
-  <Label className="mb-2 block">
-    Medical Registration Number
-  </Label>
-  <Input
-    name="registrationNumber"
-    value={formData.registrationNumber}
-    onChange={handleChange}
-    placeholder="MMC123456 / NMC123456"
-  />
-</div>
-  
+              <Label className="mb-2 block">
+                Medical Registration Number
+              </Label>
+
+              <Input
+                name="registrationNumber"
+                value={formData.registrationNumber}
+                onChange={handleChange}
+                placeholder="MMC123456"
+              />
+            </div>
+
             <div>
-              <Label className="mb-2 block">Degree</Label>
+              <Label className="mb-2 block">
+                Degree
+              </Label>
+
               <Input
                 name="degree"
                 value={formData.degree}
@@ -111,9 +179,12 @@ export default function DoctorRegisterPage() {
                 placeholder="MBBS, MD"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Specialization</Label>
+              <Label className="mb-2 block">
+                Specialization *
+              </Label>
+
               <Input
                 name="specialization"
                 value={formData.specialization}
@@ -121,9 +192,12 @@ export default function DoctorRegisterPage() {
                 placeholder="Cardiology"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Experience (Years)</Label>
+              <Label className="mb-2 block">
+                Experience (Years)
+              </Label>
+
               <Input
                 type="number"
                 name="experience"
@@ -132,9 +206,12 @@ export default function DoctorRegisterPage() {
                 placeholder="5"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Consultation Fee (₹)</Label>
+              <Label className="mb-2 block">
+                Consultation Fee (₹)
+              </Label>
+
               <Input
                 type="number"
                 name="consultationFee"
@@ -143,9 +220,12 @@ export default function DoctorRegisterPage() {
                 placeholder="500"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">Hospital / Clinic</Label>
+              <Label className="mb-2 block">
+                Hospital / Clinic
+              </Label>
+
               <Input
                 name="hospital"
                 value={formData.hospital}
@@ -153,9 +233,12 @@ export default function DoctorRegisterPage() {
                 placeholder="Apollo Hospital"
               />
             </div>
-  
+
             <div>
-              <Label className="mb-2 block">City</Label>
+              <Label className="mb-2 block">
+                City
+              </Label>
+
               <Input
                 name="city"
                 value={formData.city}
@@ -163,47 +246,80 @@ export default function DoctorRegisterPage() {
                 placeholder="Mumbai"
               />
             </div>
+
           </div>
-  
-          {/* Upload Section */}
-  
-          <div className="mt-10 border-t pt-8">
-            <h2 className="text-xl font-semibold mb-6">
+                    {/* Verification Documents */}
+
+                    <div className="mt-10 border-t pt-8">
+            <h2 className="text-2xl font-semibold mb-6">
               Verification Documents
             </h2>
-  
+
             <div className="grid md:grid-cols-2 gap-6">
+
               <div>
                 <Label className="mb-2 block">
                   Aadhaar Card
                 </Label>
-                <Input type="file" />
+
+                <Input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                />
               </div>
+
               <div>
-  <Label className="mb-2 block">
-    Registration Certificate
-  </Label>
-  <Input type="file" />
-</div>
-  
+                <Label className="mb-2 block">
+                  Medical Registration Certificate
+                </Label>
+
+                <Input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                />
+              </div>
+
               <div>
                 <Label className="mb-2 block">
                   Degree Certificate
                 </Label>
-                <Input type="file" />
+
+                <Input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                />
               </div>
+
+              <div>
+                <Label className="mb-2 block">
+                  Profile Photo
+                </Label>
+
+                <Input
+                  type="file"
+                  accept="image/*"
+                />
+              </div>
+
             </div>
           </div>
-  
-          {/* Button */}
-  
+
+          {/* Submit Button */}
+
           <div className="mt-10">
+
             <Button
-              className="w-full h-10 font-medium"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full h-12 text-base"
             >
-              Register as Doctor
+              {loading
+                ? "Registering..."
+                : "Register as Doctor"}
             </Button>
+
           </div>
+
         </div>
       </div>
     </div>
