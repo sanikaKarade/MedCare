@@ -7,6 +7,7 @@ const footerLinks = {
     { label: "Book Appointment", href: "/appointment" },
     { label: "Health Records", href: "/dashboard" },
     { label: "Prescriptions", href: "/dashboard" },
+    { label: "Shop Now", href: "/medicines" },
   ],
   company: [
     { label: "About Us", href: "/about" },
