@@ -3,49 +3,73 @@ import { PrismaClient } from "../lib/generated/prisma"
 const prisma = new PrismaClient()
 
 async function main() {
+  await prisma.product.deleteMany()
+
   await prisma.product.createMany({
     data: [
       {
-        name: "Paracetamol 500mg",
-        description: "Fever and pain relief",
+        name: "Paracetamol",
+        description: "Used to reduce fever and relieve mild to moderate pain.",
+        manufacturer: "Cipla",
+        category: "Pain Relief",
+        power: "500 mg",
+        prescription: false,
         price: 25,
         stock: 100,
-        manufacturer: "Cipla",
+        imageUrl: "/medicines/paracetamol.png",
       },
       {
         name: "Dolo 650",
-        description: "Pain and fever",
+        description: "Effective for fever, body pain, and headaches.",
+        manufacturer: "Micro Labs",
+        category: "Pain Relief",
+        power: "650 mg",
+        prescription: false,
         price: 35,
         stock: 80,
-        manufacturer: "Micro Labs",
+        imageUrl: "/medicines/dolo650.png",
       },
       {
         name: "Vitamin D3",
-        description: "Bone health supplement",
+        description: "Supports bone health and boosts immunity.",
+        manufacturer: "Sun Pharma",
+        category: "Vitamin",
+        power: "60000 IU",
+        prescription: false,
         price: 120,
         stock: 50,
-        manufacturer: "Sun Pharma",
+        imageUrl: "/medicines/vitamind3.png",
       },
       {
-        name: "Amoxicillin 250mg",
-        description: "Antibiotic",
+        name: "Amoxicillin",
+        description: "Antibiotic used for bacterial infections.",
+        manufacturer: "Mankind",
+        category: "Antibiotic",
+        power: "250 mg",
+        prescription: true,
         price: 90,
         stock: 60,
-        manufacturer: "Mankind",
+        imageUrl: "/medicines/amoxicillin.png",
       },
       {
         name: "Cetirizine",
-        description: "Allergy relief",
+        description: "Provides relief from allergies and itching.",
+        manufacturer: "Cipla",
+        category: "Allergy",
+        power: "10 mg",
+        prescription: false,
         price: 20,
         stock: 100,
-        manufacturer: "Cipla",
+        imageUrl: "/medicines/cetirizine.png",
       },
     ],
   })
 
-  console.log("Products seeded")
+  console.log("✅ Products seeded successfully!")
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
