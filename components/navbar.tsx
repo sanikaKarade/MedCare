@@ -20,6 +20,7 @@ import {
   Menu,
   Heart,
   User,
+  ShoppingCart,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ const navLinks = [
   { href: "/services", label: "Services" },
   { href: "/doctors", label: "Doctors" },
   { href: "/doctors/register", label: "Register as Doctor" },
+  { href: "/medicines", label: "Shop Now" }, 
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ]
@@ -79,6 +81,20 @@ export function Navbar() {
 
         {/* Auth Buttons */}
         <div className="hidden items-center gap-3 md:flex">
+        <Link href="/cart">
+  <Button
+    variant="ghost"
+    size="icon"
+    className="relative hover:bg-secondary"
+  >
+    <ShoppingCart className="h-5 w-5" />
+
+    {/* Cart Count */}
+    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+      0
+    </span>
+  </Button>
+</Link>
           <Show when="signed-out">
             <SignInButton mode="modal">
               <Button variant="ghost" className="transition-all hover:scale-105">
@@ -152,6 +168,20 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 border-t pt-4">
+              <Link
+  href="/cart"
+  onClick={() => setIsOpen(false)}
+  className="flex items-center justify-between rounded-md px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
+>
+  <div className="flex items-center gap-2">
+    <ShoppingCart className="h-4 w-4" />
+    Cart
+  </div>
+
+  <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-white">
+    0
+  </span>
+</Link>
                 <Show when="signed-out">
                   <SignInButton mode="modal">
                     <Button
