@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
@@ -48,6 +47,26 @@ function AppointmentContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
   const [doctors, setDoctors] = useState<any[]>([])
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("/api/doctors")
+  
+        if (!res.ok) {
+          throw new Error("Failed to fetch doctors")
+        }
+  
+        const data = await res.json()
+        console.log("Doctors:", data) // Check browser console
+  
+        setDoctors(data)
+      } catch (error) {
+        console.error("Error fetching doctors:", error)
+      }
+    }
+  
+    fetchDoctors()
+  }, [])
 
   const doctor = doctors.find((d) => d.id === selectedDoctor)
   const symptomsList = [
@@ -231,12 +250,12 @@ function AppointmentContent() {
                   <div className="rounded-lg border p-4">
                     <div className="flex items-center gap-4">
                       <div className="relative h-16 w-16 overflow-hidden rounded-full bg-secondary">
-                        <Image
-                          src={doctor.image}
-                          alt={doctor.name}
-                          fill
-                          className="object-cover"
-                        />
+                      <Image
+  src={doctor.imageUrl || "/placeholder-doctor.png"}
+  alt={doctor.name}
+  fill
+  className="object-cover"
+/>
                       </div>
                       <div>
                         <h3 className="font-semibold">{doctor.name}</h3>

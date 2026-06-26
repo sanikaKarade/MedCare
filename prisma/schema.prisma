@@ -82,20 +82,28 @@ model PrescriptionMedicine {
   prescription   Prescription @relation(fields: [prescriptionId], references: [id])
 }
 model Product {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  price         Float
-  stock         Int      @default(0)
+  id             String   @id @default(cuid())
 
-  imageUrl      String?
-  manufacturer  String?
+  name           String
+  description    String?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  manufacturer   String?
+  category       String?
+  power          String?
 
-  cartItems     CartItem[]
-  orderItems    OrderItem[]
+  imageUrl       String?
+
+  prescription   Boolean  @default(false)
+
+  price          Float
+
+  stock          Int      @default(0)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
 }
 model CartItem {
   id          String   @id @default(cuid())
