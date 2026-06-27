@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { ClerkProvider } from "@clerk/nextjs"
 import { AuthProvider } from "@/lib/auth-context"
 import "./globals.css"
+import { CartProvider } from "@/contexts/cart-context"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -62,7 +63,9 @@ export default function RootLayout({
     <html lang="en" className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
         <ClerkProvider>
+        <CartProvider>
           <AuthProvider>{children}</AuthProvider>
+          </CartProvider>
         </ClerkProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
