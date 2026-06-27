@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useCart } from "@/contexts/cart-context"
 import {
   Show,
   SignInButton,
@@ -43,6 +44,7 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const { totalItems } = useCart()
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/"
@@ -85,14 +87,15 @@ export function Navbar() {
   <Button
     variant="ghost"
     size="icon"
-    className="relative hover:bg-secondary"
+    className="relative"
   >
     <ShoppingCart className="h-5 w-5" />
 
-    {/* Cart Count */}
-    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-      0
-    </span>
+    {totalItems > 0 && (
+      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+        {totalItems}
+      </span>
+    )}
   </Button>
 </Link>
           <Show when="signed-out">
