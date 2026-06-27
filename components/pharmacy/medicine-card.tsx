@@ -80,8 +80,10 @@ export function MedicineCard({ product }: MedicineCardProps) {
         <div className="flex gap-2">
           <Button asChild variant="outline" className="flex-1">
             <Link href={`/medicines/${product.id}`}>
-              View Details
-            </Link>
+    <Button className="w-full">
+        View Details
+    </Button>
+</Link>
           </Button>
 
           <Button className="flex-1">
