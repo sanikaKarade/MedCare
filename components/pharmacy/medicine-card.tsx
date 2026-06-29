@@ -1,5 +1,5 @@
 "use client"
-
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -27,6 +27,7 @@ interface MedicineCardProps {
 export function MedicineCard({
   product,
 }: MedicineCardProps) {
+  const router = useRouter()
   const { cart, addToCart } = useCart()
   const isInCart = cart.some(
     (item) => item.id === product.id
@@ -42,9 +43,9 @@ export function MedicineCard({
   }
 
   return (
-    <Card className="overflow-hidden rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <Card className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl">
       {/* Product Image */}
-      <div className="relative h-56 bg-gray-50">
+      <div className="relative flex h-60 items-center justify-center overflow-hidden bg-gradient-to-b from-blue-50 to-white">
         <Image
           src={
             product.imageUrl ||
@@ -59,13 +60,13 @@ export function MedicineCard({
       <CardContent className="space-y-4 p-5">
         {/* Medicine Name */}
         <div>
-          <h3 className="line-clamp-1 text-lg font-semibold">
-            {product.name}
-          </h3>
+        <h3 className="text-xl font-semibold tracking-tight text-slate-900">
+    {product.name}
+</h3>
 
-          <p className="text-sm text-muted-foreground">
-            {product.power || "Standard Dose"}
-          </p>
+<p className="mt-1 text-sm text-slate-500">
+    {product.power || "Standard Dose"}
+</p>
         </div>
 
         {/* Category & Prescription */}
@@ -84,15 +85,20 @@ export function MedicineCard({
         </div>
 
         {/* Manufacturer */}
-        <p className="text-sm text-muted-foreground">
-          {product.manufacturer || "Unknown Manufacturer"}
-        </p>
-
+        <p className="text-sm text-slate-600">
+    {product.manufacturer}
+</p>
         {/* Price & Stock */}
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-blue-600">
-            ₹{product.price}
-          </span>
+        <div>
+    <p className="text-3xl font-bold text-blue-700">
+        ₹{product.price}
+    </p>
+
+    <p className="text-xs text-slate-400">
+        Inclusive of all taxes
+    </p>
+</div>
 
           {product.stock > 0 ? (
             <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
@@ -106,28 +112,37 @@ export function MedicineCard({
         </div>
 
         
-        <div className="flex gap-2">
+        <div className="space-y-3">
+
+        <div className="mt-5 flex gap-3">
   <Button
     asChild
     variant="outline"
-    className="flex-1"
+    className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
   >
     <Link href={`/medicines/${product.id}`}>
       View Details
     </Link>
   </Button>
 
-  <Button
-    className="flex-1"
-    disabled={product.stock === 0 || isInCart}
-    onClick={handleAddToCart}
-  >
-    {product.stock === 0
-      ? "Out of Stock"
-      : isInCart
-      ? "✓ Added"
-      : "Add to Cart"}
-  </Button>
+  {isInCart ? (
+    <Button
+      className="flex-1 bg-blue-600 hover:bg-blue-700"
+      onClick={() => router.push("/cart")}
+    >
+      ✓ View Cart
+    </Button>
+  ) : (
+    <Button
+      className="flex-1 bg-blue-600 hover:bg-blue-700"
+      disabled={product.stock === 0}
+      onClick={handleAddToCart}
+    >
+      Add to Cart
+    </Button>
+  )}
+</div>
+
 </div>
       </CardContent>
     </Card>
