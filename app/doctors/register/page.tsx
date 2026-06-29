@@ -3,6 +3,17 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
+import {
+  UserRound,
+  BriefcaseMedical,
+  Building2,
+  FileCheck,
+  ChevronRight,
+} from "lucide-react"
+
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -76,252 +87,688 @@ export default function DoctorRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 py-10 px-4">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+      <Navbar />
 
-        {/* Header */}
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 text-white">
+        <div className="mx-auto max-w-7xl px-6 py-16">
 
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-slate-900">
-            Doctor Registration
-          </h1>
+          {/* Breadcrumb */}
+          <div className="mb-6 flex items-center gap-2 text-sm text-blue-100">
+            <span>Home</span>
 
-          <p className="text-slate-600 mt-3">
-            Join MedCare Connect and start consulting patients online.
-          </p>
+            <ChevronRight className="h-4 w-4" />
+
+            <span>Doctors</span>
+
+            <ChevronRight className="h-4 w-4" />
+
+            <span className="font-semibold text-white">
+              Register
+            </span>
+          </div>
+
+          <div className="max-w-3xl">
+            <h1 className="text-5xl font-bold">
+              Doctor Registration
+            </h1>
+
+            <p className="mt-5 text-lg leading-8 text-blue-100">
+              Become a verified healthcare professional on
+              MedCare Connect. Manage appointments,
+              consult patients online, issue digital
+              prescriptions, and grow your medical practice
+              securely.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+
+              <div className="rounded-full bg-white/15 px-5 py-2 text-sm backdrop-blur">
+                ✓ Online Consultations
+              </div>
+
+              <div className="rounded-full bg-white/15 px-5 py-2 text-sm backdrop-blur">
+                ✓ Verified Doctor Profile
+              </div>
+
+              <div className="rounded-full bg-white/15 px-5 py-2 text-sm backdrop-blur">
+                ✓ Secure Patient Records
+              </div>
+
+            </div>
+          </div>
         </div>
+      </section>
 
-        {/* Card */}
+      {/* Registration Form */}
+      <section className="mx-auto max-w-6xl px-6 py-12">
 
-        <div className="bg-white rounded-2xl shadow-xl border p-8">
+        <div className="rounded-3xl border border-slate-200 bg-white shadow-xl">
 
-          <h2 className="text-2xl font-semibold mb-6">
-            Personal Details
-          </h2>
+          {/* Progress */}
+          <div className="border-b bg-slate-50 px-8 py-6">
 
-          <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-4 md:grid-cols-4">
 
-            <div>
-              <Label className="mb-2 block">
-                Full Name *
-              </Label>
+              <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-4">
 
-              <Input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Dr. Rahul Sharma"
-              />
-            </div>
+                <div className="rounded-full bg-blue-600 p-2 text-white">
+                  <UserRound className="h-5 w-5" />
+                </div>
 
-            <div>
-              <Label className="mb-2 block">
-                Email *
-              </Label>
+                <div>
+                  <p className="text-xs text-slate-500">
+                    Step 1
+                  </p>
 
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="doctor@email.com"
-              />
-            </div>
+                  <h3 className="font-semibold">
+                    Personal
+                  </h3>
+                </div>
 
-            <div>
-              <Label className="mb-2 block">
-                Phone Number *
-              </Label>
+              </div>
 
-              <Input
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="9876543210"
-              />
-            </div>
+              <div className="flex items-center gap-3 rounded-xl p-4">
 
-            <div>
-              <Label className="mb-2 block">
-                Aadhaar Number
-              </Label>
+                <div className="rounded-full bg-slate-200 p-2">
+                  <BriefcaseMedical className="h-5 w-5" />
+                </div>
 
-              <Input
-                name="aadhaarNumber"
-                value={formData.aadhaarNumber}
-                onChange={handleChange}
-                placeholder="XXXX XXXX XXXX"
-              />
-            </div>
+                <div>
+                  <p className="text-xs text-slate-500">
+                    Step 2
+                  </p>
 
-            <div>
-              <Label className="mb-2 block">
-                Medical Registration Number
-              </Label>
+                  <h3 className="font-semibold">
+                    Professional
+                  </h3>
+                </div>
 
-              <Input
-                name="registrationNumber"
-                value={formData.registrationNumber}
-                onChange={handleChange}
-                placeholder="MMC123456"
-              />
-            </div>
+              </div>
 
-            <div>
-              <Label className="mb-2 block">
-                Degree
-              </Label>
+              <div className="flex items-center gap-3 rounded-xl p-4">
 
-              <Input
-                name="degree"
-                value={formData.degree}
-                onChange={handleChange}
-                placeholder="MBBS, MD"
-              />
-            </div>
+                <div className="rounded-full bg-slate-200 p-2">
+                  <Building2 className="h-5 w-5" />
+                </div>
 
-            <div>
-              <Label className="mb-2 block">
-                Specialization *
-              </Label>
+                <div>
+                  <p className="text-xs text-slate-500">
+                    Step 3
+                  </p>
 
-              <Input
-                name="specialization"
-                value={formData.specialization}
-                onChange={handleChange}
-                placeholder="Cardiology"
-              />
-            </div>
+                  <h3 className="font-semibold">
+                    Clinic
+                  </h3>
+                </div>
 
-            <div>
-              <Label className="mb-2 block">
-                Experience (Years)
-              </Label>
+              </div>
 
-              <Input
-                type="number"
-                name="experience"
-                value={formData.experience}
-                onChange={handleChange}
-                placeholder="5"
-              />
-            </div>
+              <div className="flex items-center gap-3 rounded-xl p-4">
 
-            <div>
-              <Label className="mb-2 block">
-                Consultation Fee (₹)
-              </Label>
+                <div className="rounded-full bg-slate-200 p-2">
+                  <FileCheck className="h-5 w-5" />
+                </div>
 
-              <Input
-                type="number"
-                name="consultationFee"
-                value={formData.consultationFee}
-                onChange={handleChange}
-                placeholder="500"
-              />
-            </div>
+                <div>
+                  <p className="text-xs text-slate-500">
+                    Step 4
+                  </p>
 
-            <div>
-              <Label className="mb-2 block">
-                Hospital / Clinic
-              </Label>
+                  <h3 className="font-semibold">
+                    Documents
+                  </h3>
+                </div>
 
-              <Input
-                name="hospital"
-                value={formData.hospital}
-                onChange={handleChange}
-                placeholder="Apollo Hospital"
-              />
-            </div>
+              </div>
 
-            <div>
-              <Label className="mb-2 block">
-                City
-              </Label>
-
-              <Input
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                placeholder="Mumbai"
-              />
             </div>
 
           </div>
-                    {/* Verification Documents */}
 
-                    <div className="mt-10 border-t pt-8">
-            <h2 className="text-2xl font-semibold mb-6">
-              Verification Documents
+          <div className="p-8">
+{/* Personal Information */}
+
+<div className="mb-12">
+
+  <div className="mb-8 flex items-center gap-3">
+
+    <div className="rounded-xl bg-blue-100 p-3">
+      <UserRound className="h-6 w-6 text-blue-600" />
+    </div>
+
+    <div>
+      <h2 className="text-2xl font-bold text-slate-900">
+        Personal Information
+      </h2>
+
+      <p className="text-slate-500">
+        Basic details about the doctor.
+      </p>
+    </div>
+
+  </div>
+
+  <div className="grid gap-6 md:grid-cols-2">
+
+    <div>
+      <Label className="mb-2 block">
+        Full Name <span className="text-red-500">*</span>
+      </Label>
+
+      <Input
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        placeholder="Dr. Rahul Sharma"
+        className="h-12 rounded-xl"
+      />
+    </div>
+
+    <div>
+      <Label className="mb-2 block">
+        Email Address <span className="text-red-500">*</span>
+      </Label>
+
+      <Input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="doctor@email.com"
+        className="h-12 rounded-xl"
+      />
+    </div>
+
+    <div>
+      <Label className="mb-2 block">
+        Phone Number <span className="text-red-500">*</span>
+      </Label>
+
+      <Input
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        placeholder="9876543210"
+        className="h-12 rounded-xl"
+      />
+    </div>
+
+    <div>
+      <Label className="mb-2 block">
+        Aadhaar Number
+      </Label>
+
+      <Input
+        name="aadhaarNumber"
+        value={formData.aadhaarNumber}
+        onChange={handleChange}
+        placeholder="XXXX XXXX XXXX"
+        className="h-12 rounded-xl"
+      />
+    </div>
+
+  </div>
+
+</div>
+
+{/* Professional Information */}
+
+<div className="mb-12 border-t pt-10">
+
+  <div className="mb-8 flex items-center gap-3">
+
+    <div className="rounded-xl bg-blue-100 p-3">
+      <BriefcaseMedical className="h-6 w-6 text-blue-600" />
+    </div>
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-slate-900">
+        Professional Information
+      </h2>
+
+      <p className="text-slate-500">
+        Medical qualification and experience.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div className="grid gap-6 md:grid-cols-2">
+
+    <div>
+
+      <Label className="mb-2 block">
+        Medical Registration Number
+      </Label>
+
+      <Input
+        name="registrationNumber"
+        value={formData.registrationNumber}
+        onChange={handleChange}
+        placeholder="MMC123456"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+    <div>
+
+      <Label className="mb-2 block">
+        Degree
+      </Label>
+
+      <Input
+        name="degree"
+        value={formData.degree}
+        onChange={handleChange}
+        placeholder="MBBS, MD"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+    <div>
+
+      <Label className="mb-2 block">
+        Specialization <span className="text-red-500">*</span>
+      </Label>
+
+      <Input
+        name="specialization"
+        value={formData.specialization}
+        onChange={handleChange}
+        placeholder="Cardiology"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+    <div>
+
+      <Label className="mb-2 block">
+        Experience (Years)
+      </Label>
+
+      <Input
+        type="number"
+        name="experience"
+        value={formData.experience}
+        onChange={handleChange}
+        placeholder="5"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+    <div>
+
+      <Label className="mb-2 block">
+        Consultation Fee (₹)
+      </Label>
+
+      <Input
+        type="number"
+        name="consultationFee"
+        value={formData.consultationFee}
+        onChange={handleChange}
+        placeholder="500"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+  </div>
+
+</div>
+{/* Clinic Information */}
+
+<div className="mb-12 border-t pt-10">
+
+  <div className="mb-8 flex items-center gap-3">
+
+    <div className="rounded-xl bg-blue-100 p-3">
+      <Building2 className="h-6 w-6 text-blue-600" />
+    </div>
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-slate-900">
+        Clinic Information
+      </h2>
+
+      <p className="text-slate-500">
+        Tell patients where you practice.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div className="grid gap-6 md:grid-cols-2">
+
+    <div>
+
+      <Label className="mb-2 block">
+        Hospital / Clinic Name
+      </Label>
+
+      <Input
+        name="hospital"
+        value={formData.hospital}
+        onChange={handleChange}
+        placeholder="Apollo Hospital"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+    <div>
+
+      <Label className="mb-2 block">
+        City
+      </Label>
+
+      <Input
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        placeholder="Mumbai"
+        className="h-12 rounded-xl"
+      />
+
+    </div>
+
+  </div>
+
+</div>
+
+{/* Verification Documents */}
+
+<div className="border-t pt-10">
+
+  <div className="mb-8 flex items-center gap-3">
+
+    <div className="rounded-xl bg-blue-100 p-3">
+      <FileCheck className="h-6 w-6 text-blue-600" />
+    </div>
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-slate-900">
+        Verification Documents
+      </h2>
+
+      <p className="text-slate-500">
+        Upload the required documents for verification.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div className="grid gap-6 md:grid-cols-2">
+
+    {/* Aadhaar */}
+
+    <label className="cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-6 transition hover:border-blue-500 hover:bg-blue-50">
+
+      <div className="text-center">
+
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+
+          <FileCheck className="h-7 w-7 text-blue-600" />
+
+        </div>
+
+        <h3 className="font-semibold">
+          Aadhaar Card
+        </h3>
+
+        <p className="mt-2 text-sm text-slate-500">
+          PDF, JPG or PNG
+        </p>
+
+        <Input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          className="hidden"
+        />
+
+      </div>
+
+    </label>
+
+    {/* Registration */}
+
+    <label className="cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-6 transition hover:border-blue-500 hover:bg-blue-50">
+
+      <div className="text-center">
+
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+
+          <FileCheck className="h-7 w-7 text-blue-600" />
+
+        </div>
+
+        <h3 className="font-semibold">
+          Medical Registration Certificate
+        </h3>
+
+        <p className="mt-2 text-sm text-slate-500">
+          PDF, JPG or PNG
+        </p>
+
+        <Input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          className="hidden"
+        />
+
+      </div>
+
+    </label>
+
+    {/* Degree */}
+
+    <label className="cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-6 transition hover:border-blue-500 hover:bg-blue-50">
+
+      <div className="text-center">
+
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+
+          <FileCheck className="h-7 w-7 text-blue-600" />
+
+        </div>
+
+        <h3 className="font-semibold">
+          Degree Certificate
+        </h3>
+
+        <p className="mt-2 text-sm text-slate-500">
+          PDF, JPG or PNG
+        </p>
+
+        <Input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          className="hidden"
+        />
+
+      </div>
+
+    </label>
+
+    {/* Photo */}
+
+    <label className="cursor-pointer rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-6 transition hover:border-blue-500 hover:bg-blue-50">
+
+      <div className="text-center">
+
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
+
+          <UserRound className="h-7 w-7 text-blue-600" />
+
+        </div>
+
+        <h3 className="font-semibold">
+          Profile Photo
+        </h3>
+
+        <p className="mt-2 text-sm text-slate-500">
+          JPG or PNG
+        </p>
+
+        <Input
+          type="file"
+          accept="image/*"
+          className="hidden"
+        />
+
+      </div>
+
+    </label>
+
+  </div>
+
+</div>
+{/* Declaration */}
+
+<div className="mt-12 rounded-2xl border border-blue-200 bg-blue-50 p-6">
+
+  <h3 className="text-lg font-semibold text-slate-900">
+    Declaration
+  </h3>
+
+  <p className="mt-3 text-sm leading-7 text-slate-600">
+    I hereby declare that all the information provided above
+    is true and accurate to the best of my knowledge. I
+    understand that MedCare Connect may verify my medical
+    registration and uploaded documents before activating
+    my doctor profile.
+  </p>
+
+</div>
+
+{/* Register Button */}
+
+<div className="mt-10 border-t pt-8">
+
+  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+    <div>
+
+      <h3 className="text-lg font-semibold text-slate-900">
+        Ready to Join MedCare Connect?
+      </h3>
+
+      <p className="text-slate-500">
+        Complete your registration and start accepting online consultations.
+      </p>
+
+    </div>
+
+    <Button
+      onClick={handleSubmit}
+      disabled={loading}
+      className="h-12 rounded-xl bg-blue-600 px-10 text-base font-semibold hover:bg-blue-700"
+    >
+      {loading
+        ? "Registering..."
+        : "Register as Doctor"}
+    </Button>
+
+  </div>
+
+</div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-6">
+
+          <div className="mb-12 text-center">
+
+            <h2 className="text-3xl font-bold text-slate-900">
+              Why Join MedCare Connect?
             </h2>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <p className="mt-3 text-slate-500">
+              Grow your medical practice with secure digital healthcare.
+            </p>
 
-              <div>
-                <Label className="mb-2 block">
-                  Aadhaar Card
-                </Label>
-
-                <Input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block">
-                  Medical Registration Certificate
-                </Label>
-
-                <Input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block">
-                  Degree Certificate
-                </Label>
-
-                <Input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block">
-                  Profile Photo
-                </Label>
-
-                <Input
-                  type="file"
-                  accept="image/*"
-                />
-              </div>
-
-            </div>
           </div>
 
-          {/* Submit Button */}
+          <div className="grid gap-8 md:grid-cols-3">
 
-          <div className="mt-10">
+            <div className="rounded-2xl border bg-slate-50 p-8 text-center">
 
-            <Button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full h-12 text-base"
-            >
-              {loading
-                ? "Registering..."
-                : "Register as Doctor"}
-            </Button>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+
+                👨‍⚕️
+
+              </div>
+
+              <h3 className="text-xl font-semibold">
+                More Patients
+              </h3>
+
+              <p className="mt-3 text-slate-600">
+                Connect with patients from different cities through online consultations.
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border bg-slate-50 p-8 text-center">
+
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+
+                📅
+
+              </div>
+
+              <h3 className="text-xl font-semibold">
+                Smart Appointments
+              </h3>
+
+              <p className="mt-3 text-slate-600">
+                Manage appointments, prescriptions and patient history in one place.
+              </p>
+
+            </div>
+
+            <div className="rounded-2xl border bg-slate-50 p-8 text-center">
+
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+
+                🔒
+
+              </div>
+
+              <h3 className="text-xl font-semibold">
+                Secure Platform
+              </h3>
+
+              <p className="mt-3 text-slate-600">
+                Patient records and consultations are protected with modern security standards.
+              </p>
+
+            </div>
 
           </div>
 
         </div>
-      </div>
+      </section>
+
+      <Footer />
+
     </div>
   )
 }
