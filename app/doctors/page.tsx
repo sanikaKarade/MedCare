@@ -1,67 +1,60 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Navbar } from "@/components/navbar"
-import {
-  Stethoscope,
-  Building2,
-  BriefcaseMedical,
-  IndianRupee,
-} from "lucide-react"
+import { Footer } from "@/components/footer"
 
 export default async function DoctorsPage() {
   const doctors = await prisma.doctor.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: { createdAt: "desc" },
   })
-  
 
   return (
-    <>
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <div className="min-h-screen bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold mb-8">
-            Our Doctors
-          </h1>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {doctors.map((doctor) => (
-              <div
-                key={doctor.id}
-                className="bg-white rounded-xl shadow-md p-6"
-              >
-                <h2 className="text-xl font-semibold">
-                  {doctor.name}
-                </h2>
-
-                <p className="text-blue-600">
-                  {doctor.specialization || "General Physician"}
-                </p>
-
-                <p className="mt-2">
-                  {doctor.experience} Years Experience
-                </p>
-
-                <p>
-                  ₹{doctor.consultationFee}
-                </p>
-
-                <p>{doctor.hospital ?? "Hospital not specified"}</p>
-                <div className="mt-4">
-  <Link
-    href={`/appointment?doctor=${doctor.id}`}
-    className="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-  >
-    Book Appointment
-  </Link>
-</div>
-              </div>
-            ))}
-          </div>
+      {/* Hero */}
+      <section className="bg-gradient-to-r from-blue-600 via-blue-600 to-cyan-600 text-white">
+        <div className="mx-auto max-w-7xl px-6 py-16">
+          <h1 className="text-5xl font-bold">Find Your Perfect Doctor</h1>
+          <p className="mt-6 text-lg text-blue-100">
+            Book appointments with experienced specialists.
+          </p>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* Doctors */}
+      <section className="mx-auto max-w-7xl px-6 py-14">
+        <h2 className="mb-8 text-3xl font-bold">Available Doctors</h2>
+
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {doctors.map((doctor) => (
+            <div
+              key={doctor.id}
+              className="rounded-3xl border bg-white p-6 shadow-sm"
+            >
+              <h3 className="text-xl font-bold">{doctor.name}</h3>
+              <p>{doctor.specialization}</p>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <Link
+                  href={`/doctors/${doctor.id}`}
+                  className="rounded-xl border border-blue-600 py-3 text-center text-blue-600"
+                >
+                  View Profile
+                </Link>
+
+                <Link
+                  href={`/appointment?doctor=${doctor.id}`}
+                  className="rounded-xl bg-blue-600 py-3 text-center text-white"
+                >
+                  Book Now
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   )
 }
