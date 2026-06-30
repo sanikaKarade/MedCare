@@ -35,7 +35,7 @@ export default function DashboardPage() {
       title: "Active Prescriptions",
       value: prescriptions.length,
       icon: FileText,
-      href: "/dashboard/prescriptions",
+      href: "/dashboard/prescription",
       color: "bg-green-100 text-green-700",
     },
     {
@@ -265,7 +265,7 @@ export default function DashboardPage() {
               className="h-auto flex-col gap-2 py-6"
               asChild
             >
-              <Link href="/dashboard/prescriptions">
+              <Link href="/dashboard/prescription">
                 <FileText className="h-6 w-6" />
                 <span>View Prescriptions</span>
               </Link>

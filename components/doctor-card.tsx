@@ -3,11 +3,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-interface DoctorCardProps {
-  doctor: any
-  variant?: "default" | "compact"
-}
-
+import type { Doctor } from "@/lib/generated/prisma"
 interface DoctorCardProps {
   doctor: Doctor
   variant?: "default" | "compact"
@@ -21,7 +17,7 @@ export function DoctorCard({ doctor, variant = "default" }: DoctorCardProps) {
           <div className="flex items-center gap-4">
             <div className="relative h-16 w-16 overflow-hidden rounded-full bg-secondary">
               <Image
-                src={doctor.image}
+                src={doctor.imageUrl || "/placeholder-user.jpg"}
                 alt={doctor.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
