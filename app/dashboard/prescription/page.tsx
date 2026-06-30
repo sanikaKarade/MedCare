@@ -62,7 +62,7 @@ export default async function PrescriptionsPage() {
                     ).toLocaleDateString()}
                   </Badge>
 
-                  <Link href={`/dashboard/prescriptions/${prescription.id}`}>
+                  <Link href={`/dashboard/prescription/${prescription.id}`}>
   <Button variant="outline" size="sm">
     View Prescription
   </Button>

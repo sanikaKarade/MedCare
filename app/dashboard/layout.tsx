@@ -37,7 +37,7 @@ import { LoadingState } from "@/components/states"
 const sidebarLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Appointments", icon: Calendar },
-  { href: "/dashboard/prescriptions", label: "Prescriptions", icon: FileText },
+  { href: "/dashboard/prescription", label: "Prescriptions", icon: FileText },
   { href: "/dashboard/records", label: "Health Records", icon: FolderHeart },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
