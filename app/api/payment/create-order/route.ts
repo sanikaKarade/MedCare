@@ -13,14 +13,14 @@ export async function POST(req: NextRequest) {
     }
 
     const order = await razorpay.orders.create({
-      amount: Math.round(amount * 100),
+      amount: Math.round(amount * 100), // ₹ to paise
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     });
 
     return NextResponse.json(order);
   } catch (error) {
-    console.error("Razorpay Error:", error);
+    console.error("Create Order Error:", error);
 
     return NextResponse.json(
       { error: "Failed to create order" },

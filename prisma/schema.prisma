@@ -118,31 +118,31 @@ model CartItem {
   createdAt   DateTime @default(now())
 }
 model Order {
-  id               String      @id @default(cuid())
+  id                 String      @id @default(cuid())
 
-  userId           String
+  userId             String
 
-  totalAmount      Float
+  totalAmount        Float
 
-  status           OrderStatus @default(PENDING)
+  status             OrderStatus @default(PENDING)
 
-  razorpayOrderId  String?     @unique
-  razorpayPaymentId String?
-  razorpaySignature String?
+  razorpayOrderId    String?     @unique
+  razorpayPaymentId  String?
+  razorpaySignature  String?
 
-  customerName     String?
-  customerPhone    String?
-  customerEmail    String?
+  customerName       String
+  customerPhone      String
+  customerEmail      String
 
-  address          String?
-  city             String?
-  state            String?
-  pincode          String?
+  address            String
+  city               String
+  state              String
+  pincode            String
 
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 
-  items            OrderItem[]
+  items              OrderItem[]
 }
 model OrderItem {
   id          String   @id @default(cuid())
