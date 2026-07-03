@@ -20,7 +20,6 @@ interface RazorpayButtonProps {
 export function RazorpayButton({
   totalPrice,
   formData,
-  cart,
   clearCart,
 }: RazorpayButtonProps) {
   const [loading, setLoading] = useState(false)
@@ -93,8 +92,6 @@ export function RazorpayButton({
                 ...response,
               
                 formData,
-              
-                cart,
               
                 totalAmount: totalPrice,
               }),

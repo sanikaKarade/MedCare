@@ -39,7 +39,7 @@ export default async function MedicineDetailsPage({
 
           <div className="rounded-xl bg-white p-8 shadow">
             <Image
-              src={product.image || "/medicine-placeholder.png"}
+              src={product.imageUrl || "/medicine-placeholder.png"}
               alt={product.name}
               width={500}
               height={500}

@@ -1,94 +1,239 @@
-import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
-import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+"use client"
 
-export async function POST(req: NextRequest) {
-  try {
-    const { userId } = await auth();
+import { useState } from "react"
+import Link from "next/link"
 
-    if (!userId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        { status: 401 }
-      );
-    }
+import { useCart } from "@/contexts/cart-context"
 
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      formData,
-      cart,
-      totalAmount,
-    } = await req.json();
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-    // Verify Razorpay Signature
-    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+export default function CheckoutPage() {
+  const { cart, totalPrice } = useCart()
 
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
-      .update(body)
-      .digest("hex");
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  })
 
-    if (expectedSignature !== razorpay_signature) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid payment signature",
-        },
-        { status: 400 }
-      );
-    }
+  if (cart.length === 0) {
+    return (
+      <div className="container mx-auto py-20 text-center">
+        <h2 className="text-3xl font-bold">Your cart is empty</h2>
 
-    // Save Order
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        totalAmount,
-        status: "PAID",
+        <p className="mt-3 text-gray-500">
+          Add medicines before proceeding to checkout.
+        </p>
 
-        razorpayOrderId: razorpay_order_id,
-        razorpayPaymentId: razorpay_payment_id,
-        razorpaySignature: razorpay_signature,
-
-        customerName: formData.name,
-        customerPhone: formData.phone,
-        customerEmail: formData.email,
-
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-      },
-    });
-
-    // Save Order Items
-    await prisma.orderItem.createMany({
-      data: cart.map((item: any) => ({
-        orderId: order.id,
-        productId: item.id,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    });
-
-    return NextResponse.json({
-      success: true,
-      orderId: order.id,
-    });
-  } catch (error) {
-    console.error("Verify Payment Error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Verification failed",
-      },
-      { status: 500 }
-    );
+        <Button asChild className="mt-6">
+          <Link href="/medicines">Browse Medicines</Link>
+        </Button>
+      </div>
+    )
   }
+
+  return (
+    <div className="container mx-auto px-4 py-10">
+      <h1 className="mb-8 text-4xl font-bold">Checkout</h1>
+
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Left Side */}
+        <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Delivery Address</CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Full Name</Label>
+
+                <Input
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Phone Number</Label>
+
+                  <Input
+                    placeholder="9876543210"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phone: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label>Email</Label>
+
+                  <Input
+                    type="email"
+                    placeholder="example@gmail.com"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Address</Label>
+
+                <Input
+                  placeholder="House No., Street, Area"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <Label>City</Label>
+
+                  <Input
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        city: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label>State</Label>
+
+                  <Input
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        state: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label>PIN Code</Label>
+
+                  <Input
+                    placeholder="400001"
+                    value={formData.pincode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        pincode: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Method</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <RadioGroup defaultValue="razorpay">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="razorpay" id="razorpay" />
+                  <Label htmlFor="razorpay">
+                    Pay Online (Razorpay)
+                  </Label>
+                </div>
+              </RadioGroup>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Side */}
+        <Card className="h-fit">
+          <CardHeader>
+            <CardTitle>Order Summary</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between border-b pb-3"
+                >
+                  <div>
+                    <p className="font-medium">{item.name}</p>
+
+                    <p className="text-sm text-gray-500">
+                      ₹{item.price} × {item.quantity}
+                    </p>
+                  </div>
+
+                  <p className="font-semibold">
+                    ₹{item.price * item.quantity}
+                  </p>
+                </div>
+              ))}
+
+              <div className="border-t pt-4 space-y-2">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>₹{totalPrice}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Delivery</span>
+                  <span className="text-green-600">FREE</span>
+                </div>
+
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Total</span>
+                  <span>₹{totalPrice}</span>
+                </div>
+
+                <Button className="mt-4 w-full">
+                  Proceed to Payment
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
 }

@@ -16,7 +16,7 @@ export async function GET() {
         consultationFee: doctor.consultationFee,
         imageUrl: doctor.image,
         hospital: doctor.hospital,
-        city: doctor.city ?? null,
+        // city: doctor.city ?? null,
       })),
     })
 

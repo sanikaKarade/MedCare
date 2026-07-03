@@ -47,10 +47,7 @@ export function MedicineCard({
       {/* Product Image */}
       <div className="relative flex h-60 items-center justify-center overflow-hidden bg-gradient-to-b from-blue-50 to-white">
         <Image
-          src={
-            product.imageUrl ||
-            "/placeholder-medicine.png"
-          }
+          src={product.imageUrl || "/medicine-placeholder.png"}
           alt={product.name}
           fill
           className="object-contain p-6"
