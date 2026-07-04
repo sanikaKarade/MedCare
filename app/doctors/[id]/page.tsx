@@ -14,13 +14,8 @@ import {
   Calendar,
   ArrowLeft,
 } from "lucide-react"
-import { doctors } from "@/lib/data"
+import { prisma } from "@/lib/prisma"
 
-export function generateStaticParams() {
-  return doctors.map((doctor) => ({
-    id: doctor.id,
-  }))
-}
 
 export default async function DoctorProfilePage({
   params,
@@ -28,12 +23,15 @@ export default async function DoctorProfilePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const doctor = doctors.find((d) => d.id === id)
-
+  const doctor = await prisma.doctor.findUnique({
+    where: {
+      id,
+    },
+  })
+  
   if (!doctor) {
     notFound()
   }
-
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
@@ -55,7 +53,7 @@ export default async function DoctorProfilePage({
                   <div className="flex flex-col gap-6 sm:flex-row">
                     <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-xl bg-secondary">
                       <Image
-                        src={doctor.image}
+                        src={doctor.imageUrl || "/placeholder-doctor.jpg"}
                         alt={doctor.name}
                         fill
                         className="object-cover"
@@ -69,25 +67,12 @@ export default async function DoctorProfilePage({
                             {doctor.specialization}
                           </p>
                         </div>
-                        <Badge
-                          className={`${
-                            doctor.availability.includes("Today")
-                              ? "bg-green-100 text-green-700 hover:bg-green-100"
-                              : "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                          }`}
-                        >
-                          {doctor.availability}
-                        </Badge>
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+  Available
+</Badge>
                       </div>
 
                       <div className="mt-4 flex flex-wrap gap-4">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
-                          <span className="font-semibold">{doctor.rating}</span>
-                          <span className="text-muted-foreground">
-                            ({doctor.reviews} reviews)
-                          </span>
-                        </div>
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <Clock className="h-5 w-5" />
                           <span>{doctor.experience} years experience</span>
@@ -102,7 +87,7 @@ export default async function DoctorProfilePage({
                       <div>
                         <p className="text-sm font-medium">Education</p>
                         <p className="text-sm text-muted-foreground">
-                          {doctor.education}
+                        {doctor.degree || "Not Provided"}
                         </p>
                       </div>
                     </div>
@@ -144,26 +129,14 @@ export default async function DoctorProfilePage({
                   <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary/50 p-3">
                     <span className="text-sm">Consultation Fee</span>
                     <span className="text-lg font-bold">
-                      ${doctor.consultationFee}
+                    ₹{doctor.consultationFee}
                     </span>
                   </div>
-
-                  <div className="mt-4">
-                    <p className="text-sm font-medium">Available Time Slots</p>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      {doctor.availableSlots.map((slot) => (
-                        <Button
-                          key={slot}
-                          variant="outline"
-                          size="sm"
-                          className="justify-start"
-                        >
-                          <Clock className="mr-2 h-3 w-3" />
-                          {slot}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+                  <div className="mt-4 rounded-lg bg-secondary/50 p-4">
+  <p className="text-sm text-muted-foreground">
+    Time slots will be selected during appointment booking.
+  </p>
+</div>
 
                   <Button className="mt-6 w-full" asChild>
                     <Link href={`/appointment?doctor=${doctor.id}`}>
