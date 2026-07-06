@@ -191,7 +191,7 @@ export function RazorpayButton({
               clearCart()
 
               window.location.href =
-                "/order-success"
+                `/order/success?orderId=${result.orderId}`
             } else {
               alert(
                 result.message ??

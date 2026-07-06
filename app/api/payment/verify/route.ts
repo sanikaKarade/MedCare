@@ -25,6 +25,40 @@ export async function POST(req: NextRequest) {
       cart,
       totalAmount,
     } = await req.json();
+    // Validate Request
+if (
+  !razorpay_order_id ||
+  !razorpay_payment_id ||
+  !razorpay_signature
+) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Missing payment details",
+    },
+    { status: 400 }
+  );
+}
+
+if (!formData) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Missing customer information",
+    },
+    { status: 400 }
+  );
+}
+
+if (!Array.isArray(cart) || cart.length === 0) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Cart is empty",
+    },
+    { status: 400 }
+  );
+}
 
     // Verify Razorpay Signature
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
@@ -43,13 +77,19 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+// Generate Invoice Number
+const invoiceNumber = `INV-${Date.now()}`;
+const estimatedDelivery = new Date();
 
+estimatedDelivery.setDate(
+  estimatedDelivery.getDate() + 3
+);
     // Save Order
     const order = await prisma.order.create({
       data: {
         userId,
         totalAmount,
-        status: "PAID",
+        status: "CONFIRMED",
 
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
@@ -63,6 +103,8 @@ export async function POST(req: NextRequest) {
         city: formData.city,
         state: formData.state,
         pincode: formData.pincode,
+        invoiceNumber,
+estimatedDelivery,
       },
     });
 

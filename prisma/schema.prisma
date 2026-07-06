@@ -139,6 +139,9 @@ model Order {
   state              String
   pincode            String
 
+  invoiceNumber      String?     @unique
+  estimatedDelivery  DateTime?
+
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
 
@@ -168,6 +171,7 @@ enum AppointmentStatus {
 enum OrderStatus {
   PENDING
   PAID
+  CONFIRMED
   PROCESSING
   SHIPPED
   DELIVERED
