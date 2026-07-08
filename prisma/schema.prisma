@@ -25,7 +25,10 @@ model Appointment {
   prescription    Prescription?
 }
 model Doctor {
-  id                 String   @id @default(cuid())
+  id                 String       @id @default(cuid())
+
+  clerkUserId        String?      @unique
+  status             DoctorStatus @default(PENDING)
 
   name               String
 
@@ -166,6 +169,12 @@ enum AppointmentStatus {
   ONGOING
   COMPLETED
   CANCELLED
+}
+
+enum DoctorStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum OrderStatus {

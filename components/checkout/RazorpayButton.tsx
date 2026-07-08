@@ -106,7 +106,7 @@ export function RazorpayButton({
           },
 
           body: JSON.stringify({
-            amount: totalPrice,
+            cart,
           }),
         }
       )
@@ -114,7 +114,7 @@ export function RazorpayButton({
       const order = await orderResponse.json()
 
       if (!order.id) {
-        throw new Error("Unable to create Razorpay order.")
+        throw new Error(order.error || "Unable to create Razorpay order.")
       }
 
       const options: RazorpayOptions = {
@@ -174,8 +174,6 @@ export function RazorpayButton({
                   formData,
 
                   cart,
-
-                  totalAmount: totalPrice,
                 }),
               }
             )
@@ -230,7 +228,9 @@ export function RazorpayButton({
       console.error(error)
 
       alert(
-        "Something went wrong while processing payment."
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while processing payment."
       )
     } finally {
       setLoading(false)
