@@ -5,6 +5,9 @@ import { ClerkProvider } from "@clerk/nextjs"
 import { AuthProvider } from "@/lib/auth-context"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin"
+import { extractRouterConfig } from "uploadthing/server"
+import { ourFileRouter } from "@/app/api/uploadthing/core"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -62,6 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ClerkProvider>
         <CartProvider>
           <AuthProvider>{children}</AuthProvider>

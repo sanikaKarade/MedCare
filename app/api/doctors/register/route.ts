@@ -28,6 +28,16 @@ export async function POST(req: Request) {
 
     const body = await req.json()
 
+    if (!body.aadhaarFile || !body.degreeFile || !body.registrationFile) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Aadhaar, degree, and registration documents are all required.",
+        },
+        { status: 400 }
+      )
+    }
+
     const doctor = await prisma.doctor.create({
       data: {
         clerkUserId: userId,
@@ -43,6 +53,10 @@ export async function POST(req: Request) {
         hospital: body.hospital,
         city: body.city,
         consultationFee: Number(body.consultationFee),
+        aadhaarFile: body.aadhaarFile,
+        degreeFile: body.degreeFile,
+        registrationFile: body.registrationFile,
+        profilePhoto: body.profilePhoto || null,
       },
     })
 
