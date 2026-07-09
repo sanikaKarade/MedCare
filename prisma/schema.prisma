@@ -144,6 +144,7 @@ model Order {
 
   invoiceNumber      String?     @unique
   estimatedDelivery  DateTime?
+  prescriptionFile   String?
 
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt

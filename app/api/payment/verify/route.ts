@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       razorpay_signature,
       formData,
       cart,
+      prescriptionFile,
     } = await req.json()
 
     // Validate request
@@ -69,6 +70,19 @@ export async function POST(req: NextRequest) {
     if (products.length !== ids.length) {
       return NextResponse.json(
         { success: false, message: "One or more products no longer exist" },
+        { status: 400 }
+      )
+    }
+
+    // Same check as create-order, repeated here since this is the step that
+    // actually writes the Order — never trust the client on this either.
+    const requiresPrescription = products.some((p) => p.prescription)
+    if (requiresPrescription && !prescriptionFile) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "A prescription upload is required for one or more items in your cart.",
+        },
         { status: 400 }
       )
     }
@@ -142,6 +156,7 @@ export async function POST(req: NextRequest) {
           pincode: formData.pincode,
           invoiceNumber,
           estimatedDelivery,
+          prescriptionFile: prescriptionFile || null,
         },
       })
 

@@ -14,6 +14,7 @@ export interface CartItem {
   price: number
   image: string | null
   quantity: number
+  prescription: boolean
 }
 
 interface CartContextType {

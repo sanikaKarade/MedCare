@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { cart } = await req.json()
+    const { cart, prescriptionFile } = await req.json()
 
     if (!Array.isArray(cart) || cart.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 })
@@ -26,6 +26,16 @@ export async function POST(req: NextRequest) {
     if (products.length !== ids.length) {
       return NextResponse.json(
         { error: "One or more items in your cart no longer exist." },
+        { status: 400 }
+      )
+    }
+
+    // Prescription requirement is decided from the database, never from the
+    // client-supplied cart flags, since those could be tampered with.
+    const requiresPrescription = products.some((p) => p.prescription)
+    if (requiresPrescription && !prescriptionFile) {
+      return NextResponse.json(
+        { error: "A prescription upload is required for one or more items in your cart." },
         { status: 400 }
       )
     }

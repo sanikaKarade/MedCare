@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/cart-context"
 import { AddressForm } from "@/components/checkout/AddressForm"
 import { OrderSummary } from "@/components/checkout/OrderSummary"
 import { RazorpayButton } from "@/components/checkout/RazorpayButton"
+import { PrescriptionUpload } from "@/components/checkout/PrescriptionUpload"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,10 @@ export default function CheckoutPage() {
     state: "",
     pincode: "",
   })
+
+  const [prescriptionFile, setPrescriptionFile] = useState<string | null>(null)
+
+  const prescriptionRequired = cart.some((item) => item.prescription)
 
   if (cart.length === 0) {
     return (
@@ -70,6 +75,13 @@ export default function CheckoutPage() {
             formData={formData}
             setFormData={setFormData}
           />
+
+          {prescriptionRequired && (
+            <PrescriptionUpload
+              value={prescriptionFile}
+              onUploaded={setPrescriptionFile}
+            />
+          )}
 
           <Card>
             <CardHeader>
@@ -111,6 +123,8 @@ export default function CheckoutPage() {
             cart={cart}
             formData={formData}
             clearCart={clearCart}
+            prescriptionRequired={prescriptionRequired}
+            prescriptionFile={prescriptionFile}
           />
         </OrderSummary>
 

@@ -34,6 +34,21 @@ export const ourFileRouter = {
       console.log("Profile photo uploaded by", metadata.userId, file.url)
       return { uploadedBy: metadata.userId, url: file.url }
     }),
+
+  // Uploaded at checkout when the cart contains a prescription-required medicine.
+  medicinePrescription: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 },
+    pdf: { maxFileSize: "4MB", maxFileCount: 1 },
+  })
+    .middleware(async () => {
+      const { userId } = await auth()
+      if (!userId) throw new UploadThingError("You must be signed in to upload a prescription")
+      return { userId }
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Prescription uploaded by", metadata.userId, file.url)
+      return { uploadedBy: metadata.userId, url: file.url }
+    }),
 } satisfies FileRouter
 
 export type OurFileRouter = typeof ourFileRouter

@@ -24,6 +24,9 @@ interface RazorpayButtonProps {
   }
 
   clearCart: () => void
+
+  prescriptionRequired: boolean
+  prescriptionFile: string | null
 }
 
 export function RazorpayButton({
@@ -31,10 +34,17 @@ export function RazorpayButton({
   cart,
   formData,
   clearCart,
+  prescriptionRequired,
+  prescriptionFile,
 }: RazorpayButtonProps) {
   const [loading, setLoading] = useState(false)
 
   const handlePayment = async () => {
+    if (prescriptionRequired && !prescriptionFile) {
+      alert("Please upload your prescription before proceeding to payment.")
+      return
+    }
+
     // Name
     if (!formData.name.trim()) {
       alert("Please enter your full name.")
@@ -107,6 +117,7 @@ export function RazorpayButton({
 
           body: JSON.stringify({
             cart,
+            prescriptionFile,
           }),
         }
       )
@@ -174,6 +185,8 @@ export function RazorpayButton({
                   formData,
 
                   cart,
+
+                  prescriptionFile,
                 }),
               }
             )
