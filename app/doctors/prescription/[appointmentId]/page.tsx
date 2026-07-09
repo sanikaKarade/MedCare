@@ -1,4 +1,6 @@
+import { redirect, notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
+import { getCurrentDoctor } from "@/lib/current-doctor"
 import PrescriptionForm from "@/components/prescription-form"
 
 export default async function PrescriptionPage({
@@ -7,6 +9,11 @@ export default async function PrescriptionPage({
   params: Promise<{ appointmentId: string }>
 }) {
   const { appointmentId } = await params
+
+  const doctor = await getCurrentDoctor()
+  if (!doctor) {
+    redirect("/doctors/status")
+  }
 
   const appointment = await prisma.appointment.findUnique({
     where: {
@@ -23,6 +30,13 @@ export default async function PrescriptionPage({
         Appointment not found
       </div>
     )
+  }
+
+  // Make sure this appointment actually belongs to the logged-in doctor —
+  // previously any signed-in user could view/create a prescription for
+  // any appointment just by knowing its ID.
+  if (appointment.doctorId !== doctor.id) {
+    notFound()
   }
 
   return (

@@ -6,6 +6,7 @@ const isProtectedRoute = createRouteMatcher([
   "/doctors/appointments(.*)",
   "/doctors/prescription(.*)",
   "/doctors/register(.*)",
+  "/doctors/status(.*)",
   "/admin(.*)",
 ])
 

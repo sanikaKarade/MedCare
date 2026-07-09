@@ -5,7 +5,9 @@ import { prisma } from "@/lib/prisma"
 export async function DoctorsSection() {
   // Show first 3 doctors on homepage
   const featuredDoctors = await prisma.doctor.findMany({
+    where: { status: "APPROVED" },
     take: 3,
+    orderBy: { createdAt: "desc" },
   })
 
   return (

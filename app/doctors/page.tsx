@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer"
 
 export default async function DoctorsPage() {
   const doctors = await prisma.doctor.findMany({
+    where: { status: "APPROVED" },
     orderBy: { createdAt: "desc" },
   })
 

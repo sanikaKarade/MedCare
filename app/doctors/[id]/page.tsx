@@ -26,6 +26,7 @@ export default async function DoctorProfilePage({
   const doctor = await prisma.doctor.findUnique({
     where: {
       id,
+      status: "APPROVED",
     },
   })
   

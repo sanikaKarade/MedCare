@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {
   Video,
@@ -15,21 +16,32 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 export default function DoctorAppointmentsPage() {
+  const router = useRouter()
   const [appointments, setAppointments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/doctors/appointments")
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) {
+          // Not signed in as an approved doctor — show the status page
+          // instead of a silently empty/broken dashboard.
+          router.replace("/doctors/status")
+          return null
+        }
+        return res.json()
+      })
       .then((data) => {
-        setAppointments(data)
-        setLoading(false)
+        if (data) {
+          setAppointments(data)
+          setLoading(false)
+        }
       })
       .catch((error) => {
         console.error(error)
         setLoading(false)
       })
-  }, [])
+  }, [router])
 
   if (loading) {
     return (

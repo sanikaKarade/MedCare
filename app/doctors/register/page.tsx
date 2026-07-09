@@ -9,6 +9,8 @@ import {
   Building2,
   FileCheck,
   ChevronRight,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react"
 
 import { Navbar } from "@/components/navbar"
@@ -17,6 +19,7 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useUploadThing } from "@/lib/uploadthing"
 
 export default function DoctorRegisterPage() {
   const router = useRouter()
@@ -36,6 +39,52 @@ export default function DoctorRegisterPage() {
     hospital: "",
     city: "",
   })
+
+  // Uploaded document URLs — filled in as each upload completes.
+  const [documents, setDocuments] = useState({
+    aadhaarFile: null as string | null,
+    degreeFile: null as string | null,
+    registrationFile: null as string | null,
+    profilePhoto: null as string | null,
+  })
+
+  const [uploadingField, setUploadingField] = useState<string | null>(null)
+
+  const { startUpload: startDocUpload } = useUploadThing("doctorDocument", {
+    onUploadError: (error) => {
+      alert(`Upload failed: ${error.message}`)
+      setUploadingField(null)
+    },
+  })
+
+  const { startUpload: startPhotoUpload } = useUploadThing("doctorProfilePhoto", {
+    onUploadError: (error) => {
+      alert(`Upload failed: ${error.message}`)
+      setUploadingField(null)
+    },
+  })
+
+  const handleFileSelected = async (
+    field: keyof typeof documents,
+    file: File | undefined
+  ) => {
+    if (!file) return
+
+    setUploadingField(field)
+    try {
+      const uploader = field === "profilePhoto" ? startPhotoUpload : startDocUpload
+      const result = await uploader([file])
+      const url = result?.[0]?.ufsUrl || result?.[0]?.url
+      if (url) {
+        setDocuments((prev) => ({ ...prev, [field]: url }))
+      }
+    } catch (error) {
+      console.error(error)
+      alert("Something went wrong uploading that file.")
+    } finally {
+      setUploadingField(null)
+    }
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -57,6 +106,11 @@ export default function DoctorRegisterPage() {
       return
     }
 
+    if (!documents.aadhaarFile || !documents.degreeFile || !documents.registrationFile) {
+      alert("Please upload your Aadhaar card, degree certificate, and registration certificate before submitting.")
+      return
+    }
+
     try {
       setLoading(true)
 
@@ -65,7 +119,7 @@ export default function DoctorRegisterPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, ...documents }),
       })
 
       const data = await res.json()
@@ -520,7 +574,13 @@ export default function DoctorRegisterPage() {
 
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
 
-          <FileCheck className="h-7 w-7 text-blue-600" />
+          {uploadingField === "aadhaarFile" ? (
+            <Loader2 className="h-7 w-7 animate-spin text-blue-600" />
+          ) : documents.aadhaarFile ? (
+            <CheckCircle2 className="h-7 w-7 text-green-600" />
+          ) : (
+            <FileCheck className="h-7 w-7 text-blue-600" />
+          )}
 
         </div>
 
@@ -529,13 +589,15 @@ export default function DoctorRegisterPage() {
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          PDF, JPG or PNG
+          {documents.aadhaarFile ? "Uploaded ✓" : "PDF, JPG or PNG"}
         </p>
 
         <Input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="hidden"
+          disabled={uploadingField !== null}
+          onChange={(e) => handleFileSelected("aadhaarFile", e.target.files?.[0])}
         />
 
       </div>
@@ -550,7 +612,13 @@ export default function DoctorRegisterPage() {
 
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
 
-          <FileCheck className="h-7 w-7 text-blue-600" />
+          {uploadingField === "registrationFile" ? (
+            <Loader2 className="h-7 w-7 animate-spin text-blue-600" />
+          ) : documents.registrationFile ? (
+            <CheckCircle2 className="h-7 w-7 text-green-600" />
+          ) : (
+            <FileCheck className="h-7 w-7 text-blue-600" />
+          )}
 
         </div>
 
@@ -559,13 +627,15 @@ export default function DoctorRegisterPage() {
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          PDF, JPG or PNG
+          {documents.registrationFile ? "Uploaded ✓" : "PDF, JPG or PNG"}
         </p>
 
         <Input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="hidden"
+          disabled={uploadingField !== null}
+          onChange={(e) => handleFileSelected("registrationFile", e.target.files?.[0])}
         />
 
       </div>
@@ -580,7 +650,13 @@ export default function DoctorRegisterPage() {
 
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
 
-          <FileCheck className="h-7 w-7 text-blue-600" />
+          {uploadingField === "degreeFile" ? (
+            <Loader2 className="h-7 w-7 animate-spin text-blue-600" />
+          ) : documents.degreeFile ? (
+            <CheckCircle2 className="h-7 w-7 text-green-600" />
+          ) : (
+            <FileCheck className="h-7 w-7 text-blue-600" />
+          )}
 
         </div>
 
@@ -589,13 +665,15 @@ export default function DoctorRegisterPage() {
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          PDF, JPG or PNG
+          {documents.degreeFile ? "Uploaded ✓" : "PDF, JPG or PNG"}
         </p>
 
         <Input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="hidden"
+          disabled={uploadingField !== null}
+          onChange={(e) => handleFileSelected("degreeFile", e.target.files?.[0])}
         />
 
       </div>
@@ -610,7 +688,13 @@ export default function DoctorRegisterPage() {
 
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
 
-          <UserRound className="h-7 w-7 text-blue-600" />
+          {uploadingField === "profilePhoto" ? (
+            <Loader2 className="h-7 w-7 animate-spin text-blue-600" />
+          ) : documents.profilePhoto ? (
+            <CheckCircle2 className="h-7 w-7 text-green-600" />
+          ) : (
+            <UserRound className="h-7 w-7 text-blue-600" />
+          )}
 
         </div>
 
@@ -619,13 +703,15 @@ export default function DoctorRegisterPage() {
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          JPG or PNG
+          {documents.profilePhoto ? "Uploaded ✓" : "JPG or PNG (optional)"}
         </p>
 
         <Input
           type="file"
           accept="image/*"
           className="hidden"
+          disabled={uploadingField !== null}
+          onChange={(e) => handleFileSelected("profilePhoto", e.target.files?.[0])}
         />
 
       </div>
