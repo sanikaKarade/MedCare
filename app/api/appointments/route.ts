@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/prisma"
+import { createNotification } from "@/lib/notify"
+import { parseBody } from "@/lib/parse-body"
+import { createAppointmentSchema } from "@/lib/validations"
 
 export async function POST(request: Request) {
   try {
@@ -9,14 +12,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
     }
 
-    const body = await request.json()
-
-    if (!body.doctorId || !body.appointmentDate || !body.appointmentTime) {
-      return NextResponse.json(
-        { success: false, error: "Missing required fields" },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseBody(request, createAppointmentSchema)
+    if ("error" in parsed) return parsed.error
+    const body = parsed.data
 
     // Prevent double-booking the same doctor/date/time.
     const existing = await prisma.appointment.findFirst({
@@ -51,6 +49,14 @@ export async function POST(request: Request) {
         meetingLink,
         status: "CONFIRMED",
       },
+      include: { doctor: true },
+    })
+
+    await createNotification({
+      userId,
+      title: "Appointment Confirmed",
+      message: `Your appointment with ${appointment.doctor.name} on ${appointment.appointmentDate.toLocaleDateString()} at ${appointment.appointmentTime} is confirmed.`,
+      type: "appointment",
     })
 
     return NextResponse.json({

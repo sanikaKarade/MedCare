@@ -14,6 +14,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { DoctorNotifications } from "@/components/doctor-notifications"
 
 export default function DoctorAppointmentsPage() {
   const router = useRouter()
@@ -68,6 +69,8 @@ export default function DoctorAppointmentsPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto py-8 px-4">
+
+        <DoctorNotifications />
 
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">

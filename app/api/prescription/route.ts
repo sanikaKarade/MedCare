@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getCurrentDoctor } from "@/lib/current-doctor"
+import { createNotification } from "@/lib/notify"
+import { parseBody } from "@/lib/parse-body"
+import { createPrescriptionSchema } from "@/lib/validations"
 
 export async function POST(req: Request) {
   try {
@@ -9,11 +12,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const body = await req.json()
-
-    if (!body.appointmentId) {
-      return NextResponse.json({ error: "Missing appointmentId" }, { status: 400 })
-    }
+    const parsed = await parseBody(req, createPrescriptionSchema)
+    if ("error" in parsed) return parsed.error
+    const body = parsed.data
 
     // Confirm this appointment actually belongs to the doctor making the request.
     const appointment = await prisma.appointment.findUnique({
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
         followUpDate: body.followUpDate ? new Date(body.followUpDate) : null,
 
         medicines: {
-          create: body.medicines.map((medicine: any) => ({
+          create: body.medicines.map((medicine) => ({
             name: medicine.name,
             dosage: medicine.dosage,
             frequency: medicine.frequency,
@@ -45,6 +46,13 @@ export async function POST(req: Request) {
       include: {
         medicines: true,
       },
+    })
+
+    await createNotification({
+      userId: appointment.patientId,
+      title: "Prescription Ready",
+      message: `Dr. ${doctor.name} has added a new prescription for you.`,
+      type: "prescription",
     })
 
     return NextResponse.json(prescription)

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
+import { parseBody } from "@/lib/parse-body"
+import { doctorRegisterSchema } from "@/lib/validations"
 
 export async function POST(req: Request) {
   try {
@@ -26,17 +28,9 @@ export async function POST(req: Request) {
       )
     }
 
-    const body = await req.json()
-
-    if (!body.aadhaarFile || !body.degreeFile || !body.registrationFile) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Aadhaar, degree, and registration documents are all required.",
-        },
-        { status: 400 }
-      )
-    }
+    const parsed = await parseBody(req, doctorRegisterSchema)
+    if ("error" in parsed) return parsed.error
+    const body = parsed.data
 
     const doctor = await prisma.doctor.create({
       data: {
@@ -49,15 +43,20 @@ export async function POST(req: Request) {
         registrationNumber: body.registrationNumber,
         degree: body.degree,
         specialization: body.specialization,
-        experience: Number(body.experience),
+        experience: body.experience,
         hospital: body.hospital,
         city: body.city,
-        consultationFee: Number(body.consultationFee),
+        consultationFee: body.consultationFee,
         aadhaarFile: body.aadhaarFile,
         degreeFile: body.degreeFile,
         registrationFile: body.registrationFile,
         profilePhoto: body.profilePhoto || null,
       },
+    }).catch((error) => {
+      if (error?.code === "P2002" && error?.meta?.target?.includes("email")) {
+        throw new Error("DUPLICATE_EMAIL")
+      }
+      throw error
     })
 
     return NextResponse.json({
@@ -66,6 +65,16 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error(error)
+
+    if (error instanceof Error && error.message === "DUPLICATE_EMAIL") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "An account with this email is already registered as a doctor.",
+        },
+        { status: 409 }
+      )
+    }
 
     return NextResponse.json(
       {

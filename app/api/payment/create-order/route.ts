@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import razorpay from "@/lib/razorpay"
 import { prisma } from "@/lib/prisma"
+import { parseBody } from "@/lib/parse-body"
+import { createOrderSchema } from "@/lib/validations"
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,15 +12,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { cart, prescriptionFile } = await req.json()
-
-    if (!Array.isArray(cart) || cart.length === 0) {
-      return NextResponse.json({ error: "Cart is empty" }, { status: 400 })
-    }
+    const parsed = await parseBody(req, createOrderSchema)
+    if ("error" in parsed) return parsed.error
+    const { cart, prescriptionFile } = parsed.data
 
     // Only trust product id + quantity from the client. Price always comes
     // from the database — never from the request body.
-    const ids = cart.map((item: any) => item.id)
+    const ids = cart.map((item) => item.id)
     const products = await prisma.product.findMany({
       where: { id: { in: ids } },
     })
@@ -42,20 +42,15 @@ export async function POST(req: NextRequest) {
 
     let totalAmount = 0
     for (const item of cart) {
-      const product = products.find((p) => p.id === item.id)
-      const quantity = Number(item.quantity)
-
-      if (!product || !Number.isInteger(quantity) || quantity <= 0) {
-        return NextResponse.json({ error: "Invalid cart item" }, { status: 400 })
-      }
-      if (product.stock < quantity) {
+      const product = products.find((p) => p.id === item.id)!
+      if (product.stock < item.quantity) {
         return NextResponse.json(
           { error: `${product.name} only has ${product.stock} left in stock.` },
           { status: 400 }
         )
       }
 
-      totalAmount += product.price * quantity
+      totalAmount += product.price * item.quantity
     }
 
     const order = await razorpay.orders.create({

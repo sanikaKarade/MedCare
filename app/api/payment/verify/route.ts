@@ -3,6 +3,9 @@ import crypto from "crypto"
 import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/prisma"
 import razorpay from "@/lib/razorpay"
+import { createNotification } from "@/lib/notify"
+import { parseBody } from "@/lib/parse-body"
+import { verifyPaymentSchema } from "@/lib/validations"
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,6 +18,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const parsed = await parseBody(req, verifyPaymentSchema)
+    if ("error" in parsed) return parsed.error
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -22,29 +28,7 @@ export async function POST(req: NextRequest) {
       formData,
       cart,
       prescriptionFile,
-    } = await req.json()
-
-    // Validate request
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return NextResponse.json(
-        { success: false, message: "Missing payment details" },
-        { status: 400 }
-      )
-    }
-
-    if (!formData) {
-      return NextResponse.json(
-        { success: false, message: "Missing customer information" },
-        { status: 400 }
-      )
-    }
-
-    if (!Array.isArray(cart) || cart.length === 0) {
-      return NextResponse.json(
-        { success: false, message: "Cart is empty" },
-        { status: 400 }
-      )
-    }
+    } = parsed.data
 
     // Verify Razorpay signature
     const body = `${razorpay_order_id}|${razorpay_payment_id}`
@@ -62,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     // Recompute the total from the database — never trust totalAmount or
     // item.price from the client. This is the fix for the price-tampering bug.
-    const ids = cart.map((item: any) => item.id)
+    const ids = cart.map((item) => item.id)
     const products = await prisma.product.findMany({
       where: { id: { in: ids } },
     })
@@ -91,20 +75,12 @@ export async function POST(req: NextRequest) {
     const orderItemsData: { productId: string; quantity: number; price: number }[] = []
 
     for (const item of cart) {
-      const product = products.find((p) => p.id === item.id)
-      const quantity = Number(item.quantity)
+      const product = products.find((p) => p.id === item.id)!
 
-      if (!product || !Number.isInteger(quantity) || quantity <= 0) {
-        return NextResponse.json(
-          { success: false, message: "Invalid cart item" },
-          { status: 400 }
-        )
-      }
-
-      computedTotal += product.price * quantity
+      computedTotal += product.price * item.quantity
       orderItemsData.push({
         productId: product.id,
-        quantity,
+        quantity: item.quantity,
         price: product.price, // server-truth price, not client-supplied
       })
     }
@@ -177,6 +153,13 @@ export async function POST(req: NextRequest) {
       }
 
       return createdOrder
+    })
+
+    await createNotification({
+      userId,
+      title: "Order Placed",
+      message: `Your order ${order.invoiceNumber} has been placed and is being processed.`,
+      type: "order",
     })
 
     return NextResponse.json({ success: true, orderId: order.id })

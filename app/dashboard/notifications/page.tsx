@@ -1,17 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bell, Calendar, FileText, FolderHeart, Check } from "lucide-react"
-import { notifications as initialNotifications } from "@/lib/data"
+import { Bell, Calendar, FileText, FolderHeart, Package, Check } from "lucide-react"
 import { EmptyState } from "@/components/states"
+
+type Notification = {
+  id: string
+  title: string
+  message: string
+  type: string
+  read: boolean
+  createdAt: string
+}
 
 const typeIcons: Record<string, React.ReactNode> = {
   appointment: <Calendar className="h-5 w-5" />,
   prescription: <FileText className="h-5 w-5" />,
   report: <FolderHeart className="h-5 w-5" />,
   reminder: <Bell className="h-5 w-5" />,
+  order: <Package className="h-5 w-5" />,
 }
 
 const typeColors: Record<string, string> = {
@@ -19,21 +28,46 @@ const typeColors: Record<string, string> = {
   prescription: "bg-green-100 text-green-700",
   report: "bg-amber-100 text-amber-700",
   reminder: "bg-secondary text-secondary-foreground",
+  order: "bg-purple-100 text-purple-700",
 }
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(initialNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((data) => {
+        setNotifications(Array.isArray(data) ? data : [])
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error(error)
+        setLoading(false)
+      })
+  }, [])
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    await fetch("/api/notifications/mark-read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ all: true }),
+    }).catch((error) => console.error(error))
   }
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     )
+    await fetch("/api/notifications/mark-read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch((error) => console.error(error))
   }
 
   return (
@@ -55,7 +89,7 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {!loading && notifications.length === 0 ? (
         <Card>
           <CardContent className="p-6">
             <EmptyState
@@ -78,9 +112,9 @@ export default function NotificationsPage() {
               <CardContent className="p-4">
                 <div className="flex gap-4">
                   <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${typeColors[notification.type]}`}
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${typeColors[notification.type] || typeColors.reminder}`}
                   >
-                    {typeIcons[notification.type]}
+                    {typeIcons[notification.type] || typeIcons.reminder}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
@@ -97,7 +131,7 @@ export default function NotificationsPage() {
                       {notification.message}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      {new Date(notification.date).toLocaleDateString("en-US", {
+                      {new Date(notification.createdAt).toLocaleDateString("en-US", {
                         weekday: "long",
                         month: "long",
                         day: "numeric",

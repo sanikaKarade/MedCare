@@ -178,6 +178,18 @@ enum DoctorStatus {
   REJECTED
 }
 
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   // Clerk userId of the recipient — works for both patients and doctors
+  title     String
+  message   String
+  type      String   // "appointment" | "prescription" | "report" | "reminder" | "order" | "account"
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 enum OrderStatus {
   PENDING
   PAID
