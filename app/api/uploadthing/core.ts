@@ -1,6 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 import { UploadThingError } from "uploadthing/server"
 import { auth } from "@clerk/nextjs/server"
+import { requireAdmin } from "@/lib/is-admin"
 
 const f = createUploadthing()
 
@@ -47,6 +48,20 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Prescription uploaded by", metadata.userId, file.url)
+      return { uploadedBy: metadata.userId, url: file.url }
+    }),
+
+  // Product photo for the pharmacy catalog — admin only.
+  medicineImage: f({
+    image: { maxFileSize: "2MB", maxFileCount: 1 },
+  })
+    .middleware(async () => {
+      const adminId = await requireAdmin()
+      if (!adminId) throw new UploadThingError("Admin access required")
+      return { userId: adminId }
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Medicine image uploaded by", metadata.userId, file.url)
       return { uploadedBy: metadata.userId, url: file.url }
     }),
 } satisfies FileRouter

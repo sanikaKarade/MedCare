@@ -97,3 +97,17 @@ export const markNotificationReadSchema = z.union([
   z.object({ all: z.literal(true) }),
   z.object({ id: z.string().min(1) }),
 ])
+
+export const createProductSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(200),
+  description: z.string().trim().max(2000).optional().nullable(),
+  manufacturer: z.string().trim().max(200).optional().nullable(),
+  category: z.string().trim().max(100).optional().nullable(),
+  power: z.string().trim().max(100).optional().nullable(),
+  prescription: z.boolean().default(false),
+  price: z.coerce.number().min(0, "Price must be 0 or more"),
+  stock: z.coerce.number().int().min(0, "Stock must be 0 or more"),
+  imageUrl: z.string().url().optional().nullable(),
+})
+
+export const updateProductSchema = createProductSchema.partial()
