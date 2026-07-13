@@ -55,10 +55,14 @@ const emptyForm = {
 
 function ProductForm({
   initial,
+  apiBase,
+  uploadEndpoint,
   onSaved,
   onClose,
 }: {
   initial?: Product
+  apiBase: string
+  uploadEndpoint: "medicineImage" | "vendorProductImage"
   onSaved: () => void
   onClose: () => void
 }) {
@@ -80,7 +84,7 @@ function ProductForm({
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const { startUpload } = useUploadThing("medicineImage", {
+  const { startUpload } = useUploadThing(uploadEndpoint, {
     onUploadError: (error) => {
       alert(`Image upload failed: ${error.message}`)
       setUploading(false)
@@ -122,7 +126,7 @@ function ProductForm({
       }
 
       const res = await fetch(
-        initial ? `/api/admin/products/${initial.id}` : "/api/admin/products",
+        initial ? `${apiBase}/${initial.id}` : apiBase,
         {
           method: initial ? "PATCH" : "POST",
           headers: { "Content-Type": "application/json" },
@@ -215,7 +219,15 @@ function ProductForm({
   )
 }
 
-export function ProductManager({ products }: { products: Product[] }) {
+export function ProductManager({
+  products,
+  apiBase = "/api/admin/products",
+  uploadEndpoint = "medicineImage",
+}: {
+  products: Product[]
+  apiBase?: string
+  uploadEndpoint?: "medicineImage" | "vendorProductImage"
+}) {
   const router = useRouter()
   const [addOpen, setAddOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
@@ -223,7 +235,7 @@ export function ProductManager({ products }: { products: Product[] }) {
   async function handleDelete(id: string) {
     if (!confirm("Delete this medicine? This can't be undone.")) return
 
-    const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" })
+    const res = await fetch(`${apiBase}/${id}`, { method: "DELETE" })
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
       alert(data.error || "Failed to delete")
@@ -247,6 +259,8 @@ export function ProductManager({ products }: { products: Product[] }) {
               <DialogTitle>Add Medicine</DialogTitle>
             </DialogHeader>
             <ProductForm
+              apiBase={apiBase}
+              uploadEndpoint={uploadEndpoint}
               onSaved={() => router.refresh()}
               onClose={() => setAddOpen(false)}
             />
@@ -309,6 +323,8 @@ export function ProductManager({ products }: { products: Product[] }) {
           {editing && (
             <ProductForm
               initial={editing}
+              apiBase={apiBase}
+              uploadEndpoint={uploadEndpoint}
               onSaved={() => router.refresh()}
               onClose={() => setEditing(null)}
             />

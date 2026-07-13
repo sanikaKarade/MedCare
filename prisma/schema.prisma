@@ -102,12 +102,42 @@ model Product {
 
   stock          Int      @default(0)
 
+  vendorId       String?
+  vendor         Vendor?  @relation(fields: [vendorId], references: [id])
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   cartItems      CartItem[]
   orderItems     OrderItem[]
 }
+
+model Vendor {
+  id             String       @id @default(cuid())
+
+  clerkUserId    String?      @unique
+  status         VendorStatus @default(PENDING)
+
+  businessName   String
+  email          String?      @unique
+  phone          String?
+  address        String?
+  city           String?
+  licenseNumber  String?
+  licenseFile    String?
+
+  products       Product[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum VendorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model CartItem {
   id          String   @id @default(cuid())
 

@@ -19,6 +19,7 @@ import {
   ChevronDown,
   Stethoscope,
   Pill,
+  Store,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -256,6 +257,18 @@ export function Navbar() {
           </span>
         )}
 
+      </Link>
+
+    </DropdownMenuItem>
+
+    <DropdownMenuItem asChild>
+
+      <Link
+        href="/vendor/register"
+        className="flex items-center gap-3"
+      >
+        <Store className="h-4 w-4 text-blue-600" />
+        Become a Vendor
       </Link>
 
     </DropdownMenuItem>

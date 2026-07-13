@@ -111,3 +111,17 @@ export const createProductSchema = z.object({
 })
 
 export const updateProductSchema = createProductSchema.partial()
+
+export const vendorRegisterSchema = z.object({
+  businessName: z.string().trim().min(1, "Business name is required").max(200),
+  email: z.string().trim().email("Enter a valid email"),
+  phone: z.string().trim().min(7, "Enter a valid phone number").max(15),
+  address: z.string().trim().min(1, "Address is required"),
+  city: z.string().trim().min(1, "City is required"),
+  licenseNumber: z.string().trim().min(1, "Pharmacy license number is required"),
+  licenseFile: z.string().url("License document upload is required"),
+})
+
+export const vendorStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
+})
