@@ -5,6 +5,7 @@ import {
   Shield,
   Clock,
   Users,
+  HelpCircle,
 } from "lucide-react"
 
 export function HeroSection() {
@@ -15,6 +16,17 @@ export function HeroSection() {
         <div className="absolute right-0 top-0 h-[500px] w-[500px] -translate-y-1/4 translate-x-1/4 rounded-full bg-primary/5 blur-3xl animate-pulse-soft" />
         <div className="absolute bottom-0 left-0 h-[400px] w-[400px] -translate-x-1/4 translate-y-1/4 rounded-full bg-accent/10 blur-3xl animate-pulse-soft delay-500" />
       </div>
+
+      {/* Not sure which doctor? — pinned to the top-right corner */}
+      <Link
+        href="/consult"
+        className="absolute right-4 top-4 z-20 flex items-center gap-2 rounded-full border bg-background/90 px-4 py-2 text-sm font-medium shadow-sm backdrop-blur transition-all hover:scale-105 hover:border-primary hover:shadow-md sm:right-6 sm:top-6"
+      >
+        <HelpCircle className="h-4 w-4 text-primary" />
+        <span className="hidden sm:inline">Not sure which doctor?</span>
+        <span className="sm:hidden">Not sure?</span>
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
 
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid items-center gap-12 lg:grid-cols-2">

@@ -26,13 +26,20 @@ export default function AppointmentsPage() {
         
         const formatted = data.map((apt: any) => ({
           id: apt.id,
-          doctorName: apt.doctor?.name || "Unknown Doctor",
-          doctorSpecialization: apt.doctor?.specialization || "General",
+          doctorName: apt.doctor?.name || null,
+          doctorSpecialization: apt.doctor?.specialization || "",
           date: apt.appointmentDate,
           time: apt.appointmentTime,
           symptoms: apt.reason,
           meetingLink: apt.meetingLink,
-          status: "upcoming",
+          // Map the real DB status into the three tabs this page shows.
+          status:
+            apt.status === "COMPLETED"
+              ? "completed"
+              : apt.status === "CANCELLED"
+              ? "cancelled"
+              : "upcoming", // PENDING, CONFIRMED, ONGOING all show as upcoming
+          rawStatus: apt.status,
         }))  
         setAppointments(formatted)
       } catch (error) {
@@ -65,7 +72,14 @@ export default function AppointmentsPage() {
     )
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, rawStatus?: string) => {
+    if (status === "upcoming" && rawStatus === "PENDING") {
+      return (
+        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
+          Awaiting Doctor Assignment
+        </Badge>
+      )
+    }
     switch (status) {
       case "upcoming":
         return (
@@ -105,7 +119,11 @@ export default function AppointmentsPage() {
               <Video className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">{apt.doctorName}</h3>
+              <h3 className="font-semibold">
+                {apt.doctorName || (
+                  <span className="text-muted-foreground">Doctor to be assigned</span>
+                )}
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {apt.doctorSpecialization}
               </p>
@@ -137,7 +155,7 @@ export default function AppointmentsPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-  {getStatusBadge(apt.status)}
+  {getStatusBadge(apt.status, apt.rawStatus)}
 
   {apt.meetingLink && (
     <Button asChild size="sm">

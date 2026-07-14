@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { requireAdmin } from "@/lib/is-admin"
 import { Card, CardContent } from "@/components/ui/card"
-import { Users, Package, Pill, Store } from "lucide-react"
+import { Users, Package, Pill, Store, CalendarClock } from "lucide-react"
 
 export default async function AdminPage() {
   const adminId = await requireAdmin()
@@ -15,7 +15,7 @@ export default async function AdminPage() {
       <div className="container mx-auto max-w-4xl py-16 px-4">
         <h1 className="mb-8 text-4xl font-bold">Admin</h1>
 
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           <Link href="/admin/doctors">
             <Card className="transition hover:border-blue-400 hover:shadow-md">
               <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
@@ -35,6 +35,18 @@ export default async function AdminPage() {
                 <h2 className="text-lg font-semibold">Vendor Applications</h2>
                 <p className="text-sm text-muted-foreground">
                   Review and approve pharmacy vendors.
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/admin/appointments">
+            <Card className="transition hover:border-blue-400 hover:shadow-md">
+              <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
+                <CalendarClock className="h-10 w-10 text-blue-600" />
+                <h2 className="text-lg font-semibold">Unassigned Appointments</h2>
+                <p className="text-sm text-muted-foreground">
+                  Assign a doctor to general consult requests.
                 </p>
               </CardContent>
             </Card>

@@ -11,7 +11,7 @@ datasource db {
 model Appointment {
   id              String            @id @default(cuid())
   patientId       String
-  doctorId        String
+  doctorId        String?
   patientName     String
   patientPhone    String
   appointmentDate DateTime
@@ -21,7 +21,7 @@ model Appointment {
   meetingLink     String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  doctor          Doctor?           @relation(fields: [doctorId], references: [id])
   prescription    Prescription?
 }
 model Doctor {

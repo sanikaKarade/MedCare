@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const createAppointmentSchema = z.object({
-  doctorId: z.string().min(1, "Doctor is required"),
+  doctorId: z.string().min(1).optional().nullable(),
   appointmentDate: z.string().min(1, "Date is required"),
   appointmentTime: z.string().min(1, "Time is required"),
   patientName: z.string().trim().min(1, "Patient name is required").max(100),
@@ -30,6 +30,10 @@ export const doctorRegisterSchema = z.object({
 export const updateAppointmentStatusSchema = z.object({
   id: z.string().min(1),
   status: z.enum(["PENDING", "CONFIRMED", "ONGOING", "COMPLETED", "CANCELLED"]),
+})
+
+export const assignDoctorSchema = z.object({
+  doctorId: z.string().min(1, "Please select a doctor"),
 })
 
 export const createPrescriptionSchema = z.object({

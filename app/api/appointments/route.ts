@@ -16,46 +16,54 @@ export async function POST(request: Request) {
     if ("error" in parsed) return parsed.error
     const body = parsed.data
 
-    // Prevent double-booking the same doctor/date/time.
-    const existing = await prisma.appointment.findFirst({
-      where: {
-        doctorId: body.doctorId,
-        appointmentDate: new Date(body.appointmentDate),
-        appointmentTime: body.appointmentTime,
-        status: { not: "CANCELLED" },
-      },
-    })
+    // Prevent double-booking the same doctor/date/time — only relevant
+    // when a specific doctor was actually chosen.
+    if (body.doctorId) {
+      const existing = await prisma.appointment.findFirst({
+        where: {
+          doctorId: body.doctorId,
+          appointmentDate: new Date(body.appointmentDate),
+          appointmentTime: body.appointmentTime,
+          status: { not: "CANCELLED" },
+        },
+      })
 
-    if (existing) {
-      return NextResponse.json(
-        { success: false, error: "This slot has just been booked. Please pick another." },
-        { status: 409 }
-      )
+      if (existing) {
+        return NextResponse.json(
+          { success: false, error: "This slot has just been booked. Please pick another." },
+          { status: 409 }
+        )
+      }
     }
 
+    // A specific doctor was chosen: confirm immediately with a meeting link.
+    // No doctor chosen (general consult request): stays PENDING, no meeting
+    // link yet — an admin assigns a doctor afterward.
     const roomId = `medcare-${Date.now()}`
-    const meetingLink = `https://meet.jit.si/${roomId}`
+    const meetingLink = body.doctorId ? `https://meet.jit.si/${roomId}` : null
 
     const appointment = await prisma.appointment.create({
       data: {
         // patientId always comes from the authenticated session, never the client body
         patientId: userId,
-        doctorId: body.doctorId,
+        doctorId: body.doctorId || null,
         patientName: body.patientName,
         patientPhone: body.patientPhone,
         appointmentDate: new Date(body.appointmentDate),
         appointmentTime: body.appointmentTime,
         reason: body.reason,
         meetingLink,
-        status: "CONFIRMED",
+        status: body.doctorId ? "CONFIRMED" : "PENDING",
       },
       include: { doctor: true },
     })
 
     await createNotification({
       userId,
-      title: "Appointment Confirmed",
-      message: `Your appointment with ${appointment.doctor.name} on ${appointment.appointmentDate.toLocaleDateString()} at ${appointment.appointmentTime} is confirmed.`,
+      title: appointment.doctor ? "Appointment Confirmed" : "Appointment Request Received",
+      message: appointment.doctor
+        ? `Your appointment with ${appointment.doctor.name} on ${appointment.appointmentDate.toLocaleDateString()} at ${appointment.appointmentTime} is confirmed.`
+        : `We've received your consultation request for ${appointment.appointmentDate.toLocaleDateString()} at ${appointment.appointmentTime}. We'll assign the right doctor and confirm shortly.`,
       type: "appointment",
     })
 
