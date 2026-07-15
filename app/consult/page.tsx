@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useUser, useClerk } from "@clerk/nextjs"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,9 @@ const concerns = [
 ]
 
 export default function ConsultPage() {
+  const { isSignedIn, isLoaded } = useUser()
+  const { openSignIn } = useClerk()
+
   const [step, setStep] = useState(1)
   const [selectedConcern, setSelectedConcern] = useState("")
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
@@ -41,6 +45,30 @@ export default function ConsultPage() {
   const [patientPhone, setPatientPhone] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [awaitingSignIn, setAwaitingSignIn] = useState(false)
+
+  // Once they've picked a concern and signed in, automatically move them
+  // on to the date/time step instead of making them click Continue twice.
+  useEffect(() => {
+    if (awaitingSignIn && isSignedIn) {
+      setAwaitingSignIn(false)
+      setStep(2)
+    }
+  }, [awaitingSignIn, isSignedIn])
+
+  const handleContinueFromConcern = () => {
+    if (!selectedConcern) return
+
+    if (!isSignedIn) {
+      // Stay on this page — just ask them to sign in before continuing,
+      // instead of gating the whole page behind login up front.
+      setAwaitingSignIn(true)
+      openSignIn({})
+      return
+    }
+
+    setStep(2)
+  }
 
   const handleSubmit = async () => {
     if (!patientName.trim()) {
@@ -179,7 +207,7 @@ export default function ConsultPage() {
                     ))}
                   </div>
                   <div className="flex justify-end">
-                    <Button onClick={() => setStep(2)} disabled={!selectedConcern}>
+                    <Button onClick={handleContinueFromConcern} disabled={!selectedConcern}>
                       Continue
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
