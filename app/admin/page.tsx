@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { requireAdmin } from "@/lib/is-admin"
 import { Card, CardContent } from "@/components/ui/card"
-import { Users, Package, Pill, Store, CalendarClock } from "lucide-react"
+import { Users, Package, Pill, Store, CalendarClock, Home } from "lucide-react"
 
 export default async function AdminPage() {
   const adminId = await requireAdmin()
@@ -13,6 +13,13 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto max-w-4xl py-16 px-4">
+        <Link
+          href="/"
+          className="mb-4 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-slate-600 transition hover:bg-white hover:text-blue-600"
+        >
+          <Home className="h-4 w-4" />
+          Home
+        </Link>
         <h1 className="mb-8 text-4xl font-bold">Admin</h1>
 
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
