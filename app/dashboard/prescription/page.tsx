@@ -65,7 +65,7 @@ export default async function PrescriptionsPage() {
                     {prescription.diagnosis}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Prescribed by {prescription.appointment.doctor.name}
+                    Prescribed by {prescription.appointment.doctor?.name ?? "your doctor"}
                   </p>
                 </div>
 

@@ -71,18 +71,18 @@ export default async function PrescriptionViewPage({
 
             <p>
               <strong>Name:</strong>{" "}
-              {prescription.appointment.doctor.name}
+              {prescription.appointment.doctor?.name ?? "N/A"}
             </p>
 
             <p>
               <strong>Specialization:</strong>{" "}
               {
                 prescription.appointment.doctor
-                  .specialization
+                  ?.specialization ?? "N/A"
               }
             </p>
 
-            {prescription.appointment.doctor.hospital && (
+            {prescription.appointment.doctor?.hospital && (
               <p>
                 <strong>Hospital:</strong>{" "}
                 {
