@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -9,6 +9,7 @@ import {
   SignInButton,
   SignUpButton,
   UserButton,
+  useUser,
 } from "@clerk/nextjs"
 
 import {
@@ -64,6 +65,20 @@ export function Navbar() {
   const pathname = usePathname()
 
   const [isOpen, setIsOpen] = useState(false)
+
+  const { isSignedIn } = useUser()
+  const [hasDoctorApplication, setHasDoctorApplication] = useState(false)
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      setHasDoctorApplication(false)
+      return
+    }
+    fetch("/api/me/doctor-status")
+      .then((res) => res.json())
+      .then((data) => setHasDoctorApplication(!!data.hasApplication))
+      .catch(() => setHasDoctorApplication(false))
+  }, [isSignedIn])
 
   const { totalItems } = useCart()
 
@@ -386,13 +401,15 @@ export function Navbar() {
 
       </DropdownMenuItem>
 
-      <DropdownMenuItem asChild>
+      {hasDoctorApplication && (
+        <DropdownMenuItem asChild>
 
-        <Link href="/doctors/appointments">
-          Doctor Dashboard
-        </Link>
+          <Link href="/doctors/status">
+            Doctor Dashboard
+          </Link>
 
-      </DropdownMenuItem>
+        </DropdownMenuItem>
+      )}
 
       <DropdownMenuSeparator />
 
@@ -609,17 +626,19 @@ export function Navbar() {
           </Button>
         </Link>
 
-        <Link
-          href="/doctors/appointments"
-          onClick={() => setIsOpen(false)}
-        >
-          <Button
-            variant="outline"
-            className="mb-3 w-full rounded-xl"
+        {hasDoctorApplication && (
+          <Link
+            href="/doctors/status"
+            onClick={() => setIsOpen(false)}
           >
-            Doctor Dashboard
-          </Button>
-        </Link>
+            <Button
+              variant="outline"
+              className="mb-3 w-full rounded-xl"
+            >
+              Doctor Dashboard
+            </Button>
+          </Link>
+        )}
 
         <div className="mt-4 flex justify-center">
           <UserButton />
