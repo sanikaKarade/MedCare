@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma"
+import { redirect } from "next/navigation"
+import { auth } from "@clerk/nextjs/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -7,8 +9,20 @@ import { EmptyState } from "@/components/states"
 import DownloadPDF from "@/components/downloadPDF"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 export default async function PrescriptionsPage() {
+  const { userId } = await auth()
+  if (!userId) {
+    redirect("/login")
+  }
+
   const prescriptions = await prisma.prescription.findMany({
+    where: {
+      appointment: {
+        patientId: userId,
+      },
+    },
     include: {
       medicines: true,
       appointment: {

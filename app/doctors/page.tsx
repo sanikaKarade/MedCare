@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
+// Without this, Next.js statically generates this page once at build time
+// and serves that cached HTML forever — meaning doctors approved after the
+// build would never show up here until the next deploy.
+export const dynamic = "force-dynamic"
+
 export default async function DoctorsPage() {
   const doctors = await prisma.doctor.findMany({
     where: { status: "APPROVED" },

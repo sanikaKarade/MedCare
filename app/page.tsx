@@ -7,6 +7,11 @@ import { TestimonialsSection } from "@/components/home/testimonials-section"
 import { FAQSection } from "@/components/home/faq-section"
 import { CTASection } from "@/components/home/cta-section"
 
+// DoctorsSection queries the database directly — without this, the
+// homepage gets statically cached and newly approved doctors won't show
+// up here until the next deploy, same issue as the /doctors listing page.
+export const dynamic = "force-dynamic"
+
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">

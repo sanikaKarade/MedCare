@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { auth } from "@clerk/nextjs/server"
 import PrintButton from "@/components/PrintButton"
+
+export const dynamic = "force-dynamic"
 
 interface PageProps {
   params: Promise<{
@@ -11,6 +14,11 @@ interface PageProps {
 export default async function PrescriptionViewPage({
   params,
 }: PageProps) {
+  const { userId } = await auth()
+  if (!userId) {
+    redirect("/login")
+  }
+
   const { prescriptionId } = await params
 
   const prescription = await prisma.prescription.findUnique({
@@ -28,6 +36,14 @@ export default async function PrescriptionViewPage({
   })
 
   if (!prescription) {
+    notFound()
+  }
+
+  // Only the patient it belongs to, or the doctor who's assigned to that
+  // appointment, can view it — not just anyone with the link.
+  const isPatient = prescription.appointment.patientId === userId
+  const isDoctor = prescription.appointment.doctor?.clerkUserId === userId
+  if (!isPatient && !isDoctor) {
     notFound()
   }
 

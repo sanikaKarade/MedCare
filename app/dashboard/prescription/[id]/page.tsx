@@ -1,12 +1,20 @@
 import { prisma } from "@/lib/prisma"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { auth } from "@clerk/nextjs/server"
 import DownloadPDF from "@/components/downloadPDF"
+
+export const dynamic = "force-dynamic"
 
 export default async function PrescriptionDetails({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
+  const { userId } = await auth()
+  if (!userId) {
+    redirect("/login")
+  }
+
   const { id } = await params
 
   const prescription = await prisma.prescription.findUnique({
@@ -24,6 +32,11 @@ export default async function PrescriptionDetails({
   })
 
   if (!prescription) {
+    notFound()
+  }
+
+  // Only the patient this prescription belongs to can view it here.
+  if (prescription.appointment.patientId !== userId) {
     notFound()
   }
 

@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { auth } from "@clerk/nextjs/server"
 import {
   CheckCircle2,
   ShoppingBag,
@@ -16,6 +17,8 @@ import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+export const dynamic = "force-dynamic"
+
 interface PageProps {
   searchParams: Promise<{
     orderId?: string
@@ -25,6 +28,11 @@ interface PageProps {
 export default async function OrderSuccessPage({
   searchParams,
 }: PageProps) {
+  const { userId } = await auth()
+  if (!userId) {
+    redirect("/login")
+  }
+
   const { orderId } = await searchParams
 
   if (!orderId) {
@@ -45,6 +53,12 @@ export default async function OrderSuccessPage({
   })
 
   if (!order) {
+    notFound()
+  }
+
+  // Only the person who placed this order can view its confirmation page —
+  // not anyone who happens to have or guess the orderId.
+  if (order.userId !== userId) {
     notFound()
   }
 

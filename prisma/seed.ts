@@ -11,6 +11,7 @@ async function main() {
   await prisma.doctor.createMany({
     data: doctors.map((doctor) => ({
       id: doctor.id,
+      status: "APPROVED", // seeded doctors aren't tied to a real login, so approve them directly
       name: doctor.name,
       specialization: doctor.specialization,
       experience: doctor.experience,
