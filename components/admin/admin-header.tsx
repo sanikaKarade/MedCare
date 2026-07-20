@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Home, LayoutDashboard } from "lucide-react"
-
 export function AdminHeader({ showBackToAdmin = true }: { showBackToAdmin?: boolean }) {
   return (
     <div className="mb-4 flex items-center gap-4 text-sm">
