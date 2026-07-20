@@ -22,7 +22,7 @@ export default async function OrderDetailsPage({
   const { userId } = await auth()
 
   if (!userId) {
-    redirect("/sign-in")
+    redirect("/login")
   }
 
   const { id } = await params

@@ -401,6 +401,14 @@ export function Navbar() {
 
       </DropdownMenuItem>
 
+      <DropdownMenuItem asChild>
+
+        <Link href="/orders">
+          My Orders
+        </Link>
+
+      </DropdownMenuItem>
+
       {hasDoctorApplication && (
         <DropdownMenuItem asChild>
 
@@ -623,6 +631,18 @@ export function Navbar() {
             className="mb-3 w-full rounded-xl"
           >
             Dashboard
+          </Button>
+        </Link>
+
+        <Link
+          href="/orders"
+          onClick={() => setIsOpen(false)}
+        >
+          <Button
+            variant="outline"
+            className="mb-3 w-full rounded-xl"
+          >
+            My Orders
           </Button>
         </Link>
 

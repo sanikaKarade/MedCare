@@ -14,7 +14,7 @@ export default async function OrdersPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect("/sign-in")
+    redirect("/login")
   }
 
   const orders = await prisma.order.findMany({
